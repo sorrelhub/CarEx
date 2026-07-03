@@ -287,7 +287,23 @@ RunService.Stepped:Connect(function()
     end
 end)
 
+local lastMenuVisible = true
+
 RunService.Heartbeat:Connect(function(deltaTime)
+    if Window then
+        local currentVisible = Window.Visible
+        if currentVisible ~= nil and currentVisible ~= lastMenuVisible then
+            lastMenuVisible = currentVisible
+            if not currentVisible then
+                WindUI:Notify({
+                    Title = "UI Hidden",
+                    Content = "Press RightAlt to reopen the menu",
+                    Duration = 4
+                })
+            end
+        end
+    end
+
     local char = LocalPlayer.Character
     if char then
         local hum = char:FindFirstChildOfClass("Humanoid")
@@ -454,6 +470,10 @@ local Window = WindUI:CreateWindow({
     Size = UDim2.fromOffset(580, 460),
     NewElements = true,
     HideSearchBar = false,
+    ToggleKey = Enum.KeyCode.RightAlt,
+    OpenButton = {
+        Enabled = false
+    }
 })
 
 local MainTab = Window:Tab({
