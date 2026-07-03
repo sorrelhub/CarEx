@@ -27,6 +27,9 @@ local Config = {
     PitchEnabled = true,
     YawEnabled = true,
     RollEnabled = true,
+
+    JumpEnabled = false,
+    JumpPower = 100,
 }
 
 local UIElements = {}
@@ -35,6 +38,7 @@ local Keybinds = {
     ToggleSpeed = nil,
     ToggleFly = nil,
     ToggleAir = nil,
+    Jump = nil,
     
     PitchUp = nil,
     PitchDown = nil,
@@ -443,6 +447,30 @@ UIElements.FlySpeed = FlySection:Slider({
     end
 })
 
+local JumpSection = MainTab:Section({
+    Title = "Vehicle Jump"
+})
+
+UIElements.JumpEnabled = JumpSection:Toggle({
+    Title = "Enable Vehicle Jump",
+    Default = false,
+    Callback = function(state)
+        Config.JumpEnabled = state
+    end
+})
+
+UIElements.JumpPower = JumpSection:Slider({
+    Title = "Jump Power",
+    Value = {
+        Min = 10,
+        Max = 500,
+        Default = 100,
+    },
+    Callback = function(val)
+        Config.JumpPower = val
+    end
+})
+
 local RotSection = MainTab:Section({
     Title = "Keyboard Rotation (Air Control)"
 })
@@ -523,6 +551,24 @@ Keybinds.ToggleAir = ToggleBindsSection:Keybind({
     Callback = function()
         Config.RotationEnabled = not Config.RotationEnabled
         UIElements.RotationEnabled:Set(Config.RotationEnabled)
+    end
+})
+
+Keybinds.Jump = ToggleBindsSection:Keybind({
+    Title = "Vehicle Jump",
+    Value = "V",
+    Callback = function()
+        if Config.JumpEnabled then
+            local char = LocalPlayer.Character
+            local hum = char and char:FindFirstChildOfClass("Humanoid")
+            local seat = hum and hum.SeatPart
+            if seat and seat:IsA("VehicleSeat") then
+                local base = getVehicleBase(seat)
+                if base then
+                    base.AssemblyLinearVelocity = base.AssemblyLinearVelocity + Vector3.new(0, Config.JumpPower, 0)
+                end
+            end
+        end
     end
 })
 
