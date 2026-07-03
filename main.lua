@@ -42,6 +42,9 @@ local Config = {
     
     BrakeDashEnabled = false,
     BrakeDashDistance = 30,
+
+    SpeedLimiterEnabled = false,
+    MaxSpeedLimit = 100,
 }
 
 local UIElements = {}
@@ -56,6 +59,7 @@ local Keybinds = {
     ToggleBounce = nil,
     ToggleGravity = nil,
     ToggleBrakeDash = nil,
+    ToggleSpeedLimiter = nil,
     BrakeDashLeft = nil,
     BrakeDashRight = nil,
     BrakeDashBack = nil,
@@ -78,6 +82,7 @@ local KeybindDefaults = {
     ToggleBounce = "None",
     ToggleGravity = "None",
     ToggleBrakeDash = "None",
+    ToggleSpeedLimiter = "None",
     BrakeDashLeft = "None",
     BrakeDashRight = "None",
     BrakeDashBack = "None",
@@ -395,6 +400,7 @@ RunService.Heartbeat:Connect(function(deltaTime)
                         base.AssemblyAngularVelocity = Vector3.zero
                     end
                     
+                -- Speed Boost
                 elseif Config.SpeedBoostEnabled then
                     local throttle = seat.ThrottleFloat
                     local steer = seat.SteerFloat
@@ -423,6 +429,15 @@ RunService.Heartbeat:Connect(function(deltaTime)
                         else
                             base.AssemblyLinearVelocity = finalVel
                         end
+                    end
+                end
+
+                -- Speed Limiter (Cap the final calculated velocity magnitude)
+                if Config.SpeedLimiterEnabled then
+                    local currentVel = base.AssemblyLinearVelocity
+                    local speed = currentVel.Magnitude
+                    if speed > Config.MaxSpeedLimit then
+                        base.AssemblyLinearVelocity = currentVel.Unit * Config.MaxSpeedLimit
                     end
                 end
             end
@@ -548,6 +563,27 @@ UIElements.VelocityMultiplier = SpeedSection:Slider({
     },
     Callback = function(val)
         Config.VelocityMultiplier = val
+    end
+})
+
+UIElements.SpeedLimiterEnabled = SpeedSection:Toggle({
+    Title = "Enable Speed Limiter (Legit Mode)",
+    Description = "Cap maximum vehicle speed to prevent bans",
+    Default = false,
+    Callback = function(state)
+        Config.SpeedLimiterEnabled = state
+    end
+})
+
+UIElements.MaxSpeedLimit = SpeedSection:Slider({
+    Title = "Max Speed Limit",
+    Value = {
+        Min = 10,
+        Max = 1000,
+        Default = 100,
+    },
+    Callback = function(val)
+        Config.MaxSpeedLimit = val
     end
 })
 
@@ -825,6 +861,15 @@ Keybinds.ToggleBrakeDash = ToggleBindsSection:Keybind({
     Callback = function()
         Config.BrakeDashEnabled = not Config.BrakeDashEnabled
         UIElements.BrakeDashEnabled:Set(Config.BrakeDashEnabled)
+    end
+})
+
+Keybinds.ToggleSpeedLimiter = ToggleBindsSection:Keybind({
+    Title = "Toggle Speed Limiter",
+    Value = KeybindDefaults.ToggleSpeedLimiter,
+    Callback = function()
+        Config.SpeedLimiterEnabled = not Config.SpeedLimiterEnabled
+        UIElements.SpeedLimiterEnabled:Set(Config.SpeedLimiterEnabled)
     end
 })
 
