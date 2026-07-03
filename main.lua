@@ -43,6 +43,7 @@ local Keybinds = {
     ToggleAir = nil,
     Jump = nil,
     ToggleVelocity = nil,
+    ToggleFlyNoclip = nil,
     
     PitchUp = nil,
     PitchDown = nil,
@@ -50,6 +51,21 @@ local Keybinds = {
     YawRight = nil,
     RollLeft = nil,
     RollRight = nil,
+}
+
+local KeybindDefaults = {
+    ToggleSpeed = "None",
+    ToggleFly = "None",
+    ToggleAir = "None",
+    Jump = "V",
+    ToggleVelocity = "None",
+    ToggleFlyNoclip = "None",
+    PitchDown = "LeftShift",
+    PitchUp = "LeftControl",
+    YawLeft = "Left",
+    YawRight = "Right",
+    RollLeft = "Q",
+    RollRight = "E"
 }
 
 local function getVehicleBase(seat)
@@ -174,21 +190,32 @@ end
 local originalCollisions = {}
 local wasNoclipActive = false
 local lastVehicleModel = nil
+local lastCharacter = nil
 local lockPosition = nil
 
 local function cleanupNoclip()
     lockPosition = nil
-    if wasNoclipActive and lastVehicleModel then
+    if wasNoclipActive then
         pcall(function()
-            for _, part in ipairs(lastVehicleModel:GetDescendants()) do
-                if part:IsA("BasePart") and originalCollisions[part] ~= nil then
-                    part.CanCollide = originalCollisions[part]
+            if lastVehicleModel then
+                for _, part in ipairs(lastVehicleModel:GetDescendants()) do
+                    if part:IsA("BasePart") and originalCollisions[part] ~= nil then
+                        part.CanCollide = originalCollisions[part]
+                    end
+                end
+            end
+            if lastCharacter then
+                for _, part in ipairs(lastCharacter:GetDescendants()) do
+                    if part:IsA("BasePart") and originalCollisions[part] ~= nil then
+                        part.CanCollide = originalCollisions[part]
+                    end
                 end
             end
         end)
         table.clear(originalCollisions)
         wasNoclipActive = false
         lastVehicleModel = nil
+        lastCharacter = nil
     end
 end
 
@@ -200,10 +227,25 @@ RunService.Stepped:Connect(function()
         local model = seat:FindFirstAncestorOfClass("Model")
         local shouldNoclip = Config.FlyEnabled and Config.FlyNoclip
         
-        if shouldNoclip and model then
+        if shouldNoclip then
             wasNoclipActive = true
             lastVehicleModel = model
-            for _, part in ipairs(model:GetDescendants()) do
+            lastCharacter = char
+            
+            -- Disable collisions on the vehicle
+            if model then
+                for _, part in ipairs(model:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        if originalCollisions[part] == nil then
+                            originalCollisions[part] = part.CanCollide
+                        end
+                        part.CanCollide = false
+                    end
+                end
+            end
+            
+            -- Disable collisions on the character to prevent physics glitches
+            for _, part in ipairs(char:GetDescendants()) do
                 if part:IsA("BasePart") then
                     if originalCollisions[part] == nil then
                         originalCollisions[part] = part.CanCollide
@@ -567,7 +609,7 @@ local ToggleBindsSection = KeybindTab:Section({
 
 Keybinds.ToggleSpeed = ToggleBindsSection:Keybind({
     Title = "Toggle Speed Boost",
-    Value = "None",
+    Value = KeybindDefaults.ToggleSpeed,
     Callback = function()
         Config.SpeedBoostEnabled = not Config.SpeedBoostEnabled
         UIElements.SpeedBoostEnabled:Set(Config.SpeedBoostEnabled)
@@ -576,7 +618,7 @@ Keybinds.ToggleSpeed = ToggleBindsSection:Keybind({
 
 Keybinds.ToggleFly = ToggleBindsSection:Keybind({
     Title = "Toggle Car Fly",
-    Value = "None",
+    Value = KeybindDefaults.ToggleFly,
     Callback = function()
         Config.FlyEnabled = not Config.FlyEnabled
         UIElements.FlyEnabled:Set(Config.FlyEnabled)
@@ -585,7 +627,7 @@ Keybinds.ToggleFly = ToggleBindsSection:Keybind({
 
 Keybinds.ToggleAir = ToggleBindsSection:Keybind({
     Title = "Toggle Air Control",
-    Value = "None",
+    Value = KeybindDefaults.ToggleAir,
     Callback = function()
         Config.RotationEnabled = not Config.RotationEnabled
         UIElements.RotationEnabled:Set(Config.RotationEnabled)
@@ -594,7 +636,7 @@ Keybinds.ToggleAir = ToggleBindsSection:Keybind({
 
 Keybinds.Jump = ToggleBindsSection:Keybind({
     Title = "Vehicle Jump",
-    Value = "V",
+    Value = KeybindDefaults.Jump,
     Callback = function()
         if Config.JumpEnabled then
             local char = LocalPlayer.Character
@@ -612,10 +654,19 @@ Keybinds.Jump = ToggleBindsSection:Keybind({
 
 Keybinds.ToggleVelocity = ToggleBindsSection:Keybind({
     Title = "Toggle Inertia Multiplier",
-    Value = "None",
+    Value = KeybindDefaults.ToggleVelocity,
     Callback = function()
         Config.VelocityMultiplierEnabled = not Config.VelocityMultiplierEnabled
         UIElements.VelocityMultiplierEnabled:Set(Config.VelocityMultiplierEnabled)
+    end
+})
+
+Keybinds.ToggleFlyNoclip = ToggleBindsSection:Keybind({
+    Title = "Toggle Fly Noclip",
+    Value = KeybindDefaults.ToggleFlyNoclip,
+    Callback = function()
+        Config.FlyNoclip = not Config.FlyNoclip
+        UIElements.FlyNoclip:Set(Config.FlyNoclip)
     end
 })
 
@@ -625,32 +676,32 @@ local ControlBindsSection = KeybindTab:Section({
 
 Keybinds.PitchDown = ControlBindsSection:Keybind({
     Title = "Pitch Down (Nose Down)",
-    Value = "LeftShift",
+    Value = KeybindDefaults.PitchDown,
 })
 
 Keybinds.PitchUp = ControlBindsSection:Keybind({
     Title = "Pitch Up (Nose Up)",
-    Value = "LeftControl",
+    Value = KeybindDefaults.PitchUp,
 })
 
 Keybinds.YawLeft = ControlBindsSection:Keybind({
     Title = "Yaw Left (Spin Left)",
-    Value = "Left",
+    Value = KeybindDefaults.YawLeft,
 })
 
 Keybinds.YawRight = ControlBindsSection:Keybind({
     Title = "Yaw Right (Spin Right)",
-    Value = "Right",
+    Value = KeybindDefaults.YawRight,
 })
 
 Keybinds.RollLeft = ControlBindsSection:Keybind({
     Title = "Roll Left (Barrel Roll Left)",
-    Value = "Q",
+    Value = KeybindDefaults.RollLeft,
 })
 
 Keybinds.RollRight = ControlBindsSection:Keybind({
     Title = "Roll Right (Barrel Roll Right)",
-    Value = "E",
+    Value = KeybindDefaults.RollRight,
 })
 
 local ConfigSection = ConfigTab:Section({
