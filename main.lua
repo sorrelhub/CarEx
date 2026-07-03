@@ -7,7 +7,7 @@ local HttpService = game:GetService("HttpService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = Workspace.CurrentCamera
 
-local WinningLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/wxnvxa/winning-lib/main/dist/main.lua"))()
+local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/main/dist/main.lua"))()
 
 local Config = {
     SpeedBoostEnabled = false,
@@ -445,27 +445,30 @@ RunService.Heartbeat:Connect(function(deltaTime)
     end
 end)
 
-local Window = WinningLib:CreateWindow({
+local Window = WindUI:CreateWindow({
     Title = "Car Exploit",
-    SubTitle = "Sorrel Hub",
-    Icon = "car",
+    Author = "by Sorrel Hub",
+    Folder = "SorrelCarExploit",
+    Icon = "solar:settings-bold-duotone",
     Theme = "Dark",
-    Acrylic = false
+    Size = UDim2.fromOffset(580, 460),
+    NewElements = true,
+    HideSearchBar = false,
 })
 
 local MainTab = Window:Tab({
     Title = "Main",
-    Icon = "home"
+    Icon = "solar:home-2-bold"
 })
 
 local KeybindTab = Window:Tab({
     Title = "Keybinds",
-    Icon = "keyboard"
+    Icon = "solar:keyboard-bold"
 })
 
 local ConfigTab = Window:Tab({
     Title = "Configs",
-    Icon = "file-text"
+    Icon = "solar:document-bold"
 })
 
 local SpeedSection = MainTab:Section({
@@ -474,7 +477,7 @@ local SpeedSection = MainTab:Section({
 
 UIElements.SpeedBoostEnabled = SpeedSection:Toggle({
     Title = "Enable Speed Boost",
-    Default = false,
+    Value = false,
     Callback = function(state)
         Config.SpeedBoostEnabled = state
     end
@@ -494,8 +497,8 @@ UIElements.SpeedBoost = SpeedSection:Slider({
 
 UIElements.SmoothStart = SpeedSection:Toggle({
     Title = "Smooth Start",
-    Description = "Smoothly accelerates the vehicle",
-    Default = true,
+    Desc = "Smoothly accelerates the vehicle",
+    Value = true,
     Callback = function(state)
         Config.SmoothStart = state
     end
@@ -503,7 +506,7 @@ UIElements.SmoothStart = SpeedSection:Toggle({
 
 UIElements.Acceleration = SpeedSection:Slider({
     Title = "Acceleration Rate",
-    Description = "Acceleration rate (higher values mean faster ramp-up)",
+    Desc = "Acceleration rate (higher values mean faster ramp-up)",
     Value = {
         Min = 1,
         Max = 30,
@@ -516,8 +519,8 @@ UIElements.Acceleration = SpeedSection:Slider({
 
 UIElements.PreserveY = SpeedSection:Toggle({
     Title = "Preserve Gravity",
-    Description = "Prevents the vehicle from flying off bumps",
-    Default = true,
+    Desc = "Prevents the vehicle from flying off bumps",
+    Value = true,
     Callback = function(state)
         Config.PreserveY = state
     end
@@ -525,8 +528,8 @@ UIElements.PreserveY = SpeedSection:Toggle({
 
 UIElements.EasySteer = SpeedSection:Toggle({
     Title = "Easy Steer",
-    Description = "Improves steering handling at high speeds",
-    Default = true,
+    Desc = "Improves steering handling at high speeds",
+    Value = true,
     Callback = function(state)
         Config.EasySteer = state
     end
@@ -534,7 +537,7 @@ UIElements.EasySteer = SpeedSection:Toggle({
 
 UIElements.EasySteerRate = SpeedSection:Slider({
     Title = "Steer Assist Rate",
-    Description = "Strength of the steering assistance",
+    Desc = "Strength of the steering assistance",
     Value = {
         Min = 10,
         Max = 360,
@@ -547,8 +550,8 @@ UIElements.EasySteerRate = SpeedSection:Slider({
 
 UIElements.VelocityMultiplierEnabled = SpeedSection:Toggle({
     Title = "Enable Inertia Multiplier",
-    Description = "Multiplies natural acceleration and speed using physics",
-    Default = false,
+    Desc = "Multiplies natural acceleration and speed using physics",
+    Value = false,
     Callback = function(state)
         Config.VelocityMultiplierEnabled = state
     end
@@ -568,8 +571,8 @@ UIElements.VelocityMultiplier = SpeedSection:Slider({
 
 UIElements.SpeedLimiterEnabled = SpeedSection:Toggle({
     Title = "Enable Speed Limiter (Legit Mode)",
-    Description = "Cap maximum vehicle speed to prevent bans",
-    Default = false,
+    Desc = "Cap maximum vehicle speed to prevent bans",
+    Value = false,
     Callback = function(state)
         Config.SpeedLimiterEnabled = state
     end
@@ -593,7 +596,7 @@ local FlySection = MainTab:Section({
 
 UIElements.FlyEnabled = FlySection:Toggle({
     Title = "Enable Car Fly",
-    Default = false,
+    Value = false,
     Callback = function(state)
         Config.FlyEnabled = state
     end
@@ -601,8 +604,8 @@ UIElements.FlyEnabled = FlySection:Toggle({
 
 UIElements.FlyNoclip = FlySection:Toggle({
     Title = "Noclip on Fly",
-    Description = "Allows the vehicle to fly through solid walls",
-    Default = false,
+    Desc = "Allows the vehicle to fly through solid walls",
+    Value = false,
     Callback = function(state)
         Config.FlyNoclip = state
     end
@@ -626,7 +629,7 @@ local JumpSection = MainTab:Section({
 
 UIElements.JumpEnabled = JumpSection:Toggle({
     Title = "Enable Vehicle Jump",
-    Default = false,
+    Value = false,
     Callback = function(state)
         Config.JumpEnabled = state
     end
@@ -646,8 +649,8 @@ UIElements.JumpPower = JumpSection:Slider({
 
 UIElements.BounceEnabled = JumpSection:Toggle({
     Title = "Enable Bounce Mode (Rubber Car)",
-    Description = "Bounces the vehicle off the ground when landing",
-    Default = false,
+    Desc = "Bounces the vehicle off the ground when landing",
+    Value = false,
     Callback = function(state)
         Config.BounceEnabled = state
     end
@@ -658,9 +661,9 @@ UIElements.Bounciness = JumpSection:Slider({
     Value = {
         Min = 0.5,
         Max = 3.0,
-        Decimal = 1,
         Default = 1.2,
     },
+    Step = 0.1,
     Callback = function(val)
         Config.Bounciness = val
     end
@@ -672,8 +675,8 @@ local GravitySection = MainTab:Section({
 
 UIElements.CustomGravityEnabled = GravitySection:Toggle({
     Title = "Enable Gravity Control",
-    Description = "Modify gravitational pull on your vehicle",
-    Default = false,
+    Desc = "Modify gravitational pull on your vehicle",
+    Value = false,
     Callback = function(state)
         Config.CustomGravityEnabled = state
     end
@@ -681,13 +684,13 @@ UIElements.CustomGravityEnabled = GravitySection:Toggle({
 
 UIElements.GravityFactor = GravitySection:Slider({
     Title = "Gravity Multiplier",
-    Description = "0 = No Gravity, 1 = Normal, -1 = Reversed",
+    Desc = "0 = No Gravity, 1 = Normal, -1 = Reversed",
     Value = {
         Min = -2.0,
         Max = 2.0,
-        Decimal = 1,
         Default = 1.0,
     },
+    Step = 0.1,
     Callback = function(val)
         Config.GravityFactor = val
     end
@@ -699,8 +702,8 @@ local BrakeSection = MainTab:Section({
 
 UIElements.BrakeDashEnabled = BrakeSection:Toggle({
     Title = "Enable Sudden Brake Dash",
-    Description = "Perform instant dash when braking or pressing bind",
-    Default = false,
+    Desc = "Perform instant dash when braking or pressing bind",
+    Value = false,
     Callback = function(state)
         Config.BrakeDashEnabled = state
     end
@@ -724,8 +727,8 @@ local RotSection = MainTab:Section({
 
 UIElements.RotationEnabled = RotSection:Toggle({
     Title = "Enable Rotation",
-    Description = "Allows tilting and spinning the vehicle with keys",
-    Default = true,
+    Desc = "Allows tilting and spinning the vehicle with keys",
+    Value = true,
     Callback = function(state)
         Config.RotationEnabled = state
     end
@@ -745,8 +748,8 @@ UIElements.RotationSpeed = RotSection:Slider({
 
 UIElements.PitchEnabled = RotSection:Toggle({
     Title = "Pitch Control",
-    Description = "Nose tilt controls (Up/Down)",
-    Default = true,
+    Desc = "Nose tilt controls (Up/Down)",
+    Value = true,
     Callback = function(state)
         Config.PitchEnabled = state
     end
@@ -754,8 +757,8 @@ UIElements.PitchEnabled = RotSection:Toggle({
 
 UIElements.YawEnabled = RotSection:Toggle({
     Title = "Yaw Control",
-    Description = "Left/Right spinning controls",
-    Default = true,
+    Desc = "Left/Right spinning controls",
+    Value = true,
     Callback = function(state)
         Config.YawEnabled = state
     end
@@ -763,8 +766,8 @@ UIElements.YawEnabled = RotSection:Toggle({
 
 UIElements.RollEnabled = RotSection:Toggle({
     Title = "Roll Control",
-    Description = "Left/Right rolling (barrel roll) controls",
-    Default = true,
+    Desc = "Left/Right rolling (barrel roll) controls",
+    Value = true,
     Callback = function(state)
         Config.RollEnabled = state
     end
@@ -777,100 +780,51 @@ local ToggleBindsSection = KeybindTab:Section({
 Keybinds.ToggleSpeed = ToggleBindsSection:Keybind({
     Title = "Toggle Speed Boost",
     Value = KeybindDefaults.ToggleSpeed,
-    Callback = function()
-        Config.SpeedBoostEnabled = not Config.SpeedBoostEnabled
-        UIElements.SpeedBoostEnabled:Set(Config.SpeedBoostEnabled)
-    end
 })
 
 Keybinds.ToggleFly = ToggleBindsSection:Keybind({
     Title = "Toggle Car Fly",
     Value = KeybindDefaults.ToggleFly,
-    Callback = function()
-        Config.FlyEnabled = not Config.FlyEnabled
-        UIElements.FlyEnabled:Set(Config.FlyEnabled)
-    end
 })
 
 Keybinds.ToggleAir = ToggleBindsSection:Keybind({
     Title = "Toggle Air Control",
     Value = KeybindDefaults.ToggleAir,
-    Callback = function()
-        Config.RotationEnabled = not Config.RotationEnabled
-        UIElements.RotationEnabled:Set(Config.RotationEnabled)
-    end
 })
 
 Keybinds.Jump = ToggleBindsSection:Keybind({
     Title = "Vehicle Jump",
     Value = KeybindDefaults.Jump,
-    Callback = function()
-        if Config.JumpEnabled then
-            local char = LocalPlayer.Character
-            local hum = char and char:FindFirstChildOfClass("Humanoid")
-            local seat = hum and hum.SeatPart
-            if seat and seat:IsA("VehicleSeat") then
-                local base = getVehicleBase(seat)
-                if base then
-                    base.AssemblyLinearVelocity = base.AssemblyLinearVelocity + Vector3.new(0, Config.JumpPower, 0)
-                end
-            end
-        end
-    end
 })
 
 Keybinds.ToggleVelocity = ToggleBindsSection:Keybind({
     Title = "Toggle Inertia Multiplier",
     Value = KeybindDefaults.ToggleVelocity,
-    Callback = function()
-        Config.VelocityMultiplierEnabled = not Config.VelocityMultiplierEnabled
-        UIElements.VelocityMultiplierEnabled:Set(Config.VelocityMultiplierEnabled)
-    end
 })
 
 Keybinds.ToggleFlyNoclip = ToggleBindsSection:Keybind({
     Title = "Toggle Fly Noclip",
     Value = KeybindDefaults.ToggleFlyNoclip,
-    Callback = function()
-        Config.FlyNoclip = not Config.FlyNoclip
-        UIElements.FlyNoclip:Set(Config.FlyNoclip)
-    end
 })
 
 Keybinds.ToggleBounce = ToggleBindsSection:Keybind({
     Title = "Toggle Bounce Mode",
     Value = KeybindDefaults.ToggleBounce,
-    Callback = function()
-        Config.BounceEnabled = not Config.BounceEnabled
-        UIElements.BounceEnabled:Set(Config.BounceEnabled)
-    end
 })
 
 Keybinds.ToggleGravity = ToggleBindsSection:Keybind({
     Title = "Toggle Gravity Control",
     Value = KeybindDefaults.ToggleGravity,
-    Callback = function()
-        Config.CustomGravityEnabled = not Config.CustomGravityEnabled
-        UIElements.CustomGravityEnabled:Set(Config.CustomGravityEnabled)
-    end
 })
 
 Keybinds.ToggleBrakeDash = ToggleBindsSection:Keybind({
     Title = "Toggle Brake Dash Mode",
     Value = KeybindDefaults.ToggleBrakeDash,
-    Callback = function()
-        Config.BrakeDashEnabled = not Config.BrakeDashEnabled
-        UIElements.BrakeDashEnabled:Set(Config.BrakeDashEnabled)
-    end
 })
 
 Keybinds.ToggleSpeedLimiter = ToggleBindsSection:Keybind({
     Title = "Toggle Speed Limiter",
     Value = KeybindDefaults.ToggleSpeedLimiter,
-    Callback = function()
-        Config.SpeedLimiterEnabled = not Config.SpeedLimiterEnabled
-        UIElements.SpeedLimiterEnabled:Set(Config.SpeedLimiterEnabled)
-    end
 })
 
 local DashBindsSection = KeybindTab:Section({
@@ -896,43 +850,19 @@ end
 Keybinds.BrakeDashLeft = DashBindsSection:Keybind({
     Title = "Dash Left",
     Value = KeybindDefaults.BrakeDashLeft,
-    Callback = function()
-        local char = LocalPlayer.Character
-        local hum = char and char:FindFirstChildOfClass("Humanoid")
-        local seat = hum and hum.SeatPart
-        if seat then
-            triggerDash(-seat.CFrame.RightVector)
-        end
-    end
 })
 
 Keybinds.BrakeDashRight = DashBindsSection:Keybind({
     Title = "Dash Right",
     Value = KeybindDefaults.BrakeDashRight,
-    Callback = function()
-        local char = LocalPlayer.Character
-        local hum = char and char:FindFirstChildOfClass("Humanoid")
-        local seat = hum and hum.SeatPart
-        if seat then
-            triggerDash(seat.CFrame.RightVector)
-        end
-    end
 })
 
 Keybinds.BrakeDashBack = DashBindsSection:Keybind({
     Title = "Dash Backwards",
     Value = KeybindDefaults.BrakeDashBack,
-    Callback = function()
-        local char = LocalPlayer.Character
-        local hum = char and char:FindFirstChildOfClass("Humanoid")
-        local seat = hum and hum.SeatPart
-        if seat then
-            triggerDash(-seat.CFrame.LookVector)
-        end
-    end
 })
 
--- Listen for manual brake pedal (S key / Down Arrow) for sudden brake dash trigger
+-- Unified UserInputService.InputBegan listener for keybind triggers and manual brake pedal
 local brakeKeys = {
     [Enum.KeyCode.S] = true,
     [Enum.KeyCode.Down] = true
@@ -940,12 +870,111 @@ local brakeKeys = {
 
 UserInputService.InputBegan:Connect(function(input, processed)
     if processed then return end
-    if Config.BrakeDashEnabled and brakeKeys[input.KeyCode] then
+    
+    local pressedKey = input.KeyCode
+    if pressedKey == Enum.KeyCode.Unknown then return end
+    
+    -- Helper function to check if input matches a keybind
+    local function matchesBind(bindObj)
+        if not bindObj or not bindObj.Value or bindObj.Value == "None" then return false end
+        local bindVal = bindObj.Value
+        if bindVal == "MouseLeftButton" then
+            return input.UserInputType == Enum.UserInputType.MouseButton1
+        elseif bindVal == "MouseRightButton" then
+            return input.UserInputType == Enum.UserInputType.MouseButton2
+        else
+            return pressedKey.Name == bindVal
+        end
+    end
+
+    -- Manual Brake Dash pedal trigger
+    if Config.BrakeDashEnabled and brakeKeys[pressedKey] then
         local char = LocalPlayer.Character
         local hum = char and char:FindFirstChildOfClass("Humanoid")
         local seat = hum and hum.SeatPart
         if seat and seat:IsA("VehicleSeat") and seat.AssemblyLinearVelocity.Magnitude > 30 then
-            -- Dash backwards if braking at high speed
+            triggerDash(-seat.CFrame.LookVector)
+            return
+        end
+    end
+    
+    -- Check discrete keybind triggers
+    if matchesBind(Keybinds.ToggleSpeed) then
+        Config.SpeedBoostEnabled = not Config.SpeedBoostEnabled
+        if UIElements.SpeedBoostEnabled then
+            UIElements.SpeedBoostEnabled:Set(Config.SpeedBoostEnabled)
+        end
+    elseif matchesBind(Keybinds.ToggleFly) then
+        Config.FlyEnabled = not Config.FlyEnabled
+        if UIElements.FlyEnabled then
+            UIElements.FlyEnabled:Set(Config.FlyEnabled)
+        end
+    elseif matchesBind(Keybinds.ToggleAir) then
+        Config.RotationEnabled = not Config.RotationEnabled
+        if UIElements.RotationEnabled then
+            UIElements.RotationEnabled:Set(Config.RotationEnabled)
+        end
+    elseif matchesBind(Keybinds.Jump) then
+        if Config.JumpEnabled then
+            local char = LocalPlayer.Character
+            local hum = char and char:FindFirstChildOfClass("Humanoid")
+            local seat = hum and hum.SeatPart
+            if seat and seat:IsA("VehicleSeat") then
+                local base = getVehicleBase(seat)
+                if base then
+                    base.AssemblyLinearVelocity = base.AssemblyLinearVelocity + Vector3.new(0, Config.JumpPower, 0)
+                end
+            end
+        end
+    elseif matchesBind(Keybinds.ToggleVelocity) then
+        Config.VelocityMultiplierEnabled = not Config.VelocityMultiplierEnabled
+        if UIElements.VelocityMultiplierEnabled then
+            UIElements.VelocityMultiplierEnabled:Set(Config.VelocityMultiplierEnabled)
+        end
+    elseif matchesBind(Keybinds.ToggleFlyNoclip) then
+        Config.FlyNoclip = not Config.FlyNoclip
+        if UIElements.FlyNoclip then
+            UIElements.FlyNoclip:Set(Config.FlyNoclip)
+        end
+    elseif matchesBind(Keybinds.ToggleBounce) then
+        Config.BounceEnabled = not Config.BounceEnabled
+        if UIElements.BounceEnabled then
+            UIElements.BounceEnabled:Set(Config.BounceEnabled)
+        end
+    elseif matchesBind(Keybinds.ToggleGravity) then
+        Config.CustomGravityEnabled = not Config.CustomGravityEnabled
+        if UIElements.CustomGravityEnabled then
+            UIElements.CustomGravityEnabled:Set(Config.CustomGravityEnabled)
+        end
+    elseif matchesBind(Keybinds.ToggleBrakeDash) then
+        Config.BrakeDashEnabled = not Config.BrakeDashEnabled
+        if UIElements.BrakeDashEnabled then
+            UIElements.BrakeDashEnabled:Set(Config.BrakeDashEnabled)
+        end
+    elseif matchesBind(Keybinds.ToggleSpeedLimiter) then
+        Config.SpeedLimiterEnabled = not Config.SpeedLimiterEnabled
+        if UIElements.SpeedLimiterEnabled then
+            UIElements.SpeedLimiterEnabled:Set(Config.SpeedLimiterEnabled)
+        end
+    elseif matchesBind(Keybinds.BrakeDashLeft) then
+        local char = LocalPlayer.Character
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        local seat = hum and hum.SeatPart
+        if seat then
+            triggerDash(-seat.CFrame.RightVector)
+        end
+    elseif matchesBind(Keybinds.BrakeDashRight) then
+        local char = LocalPlayer.Character
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        local seat = hum and hum.SeatPart
+        if seat then
+            triggerDash(seat.CFrame.RightVector)
+        end
+    elseif matchesBind(Keybinds.BrakeDashBack) then
+        local char = LocalPlayer.Character
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        local seat = hum and hum.SeatPart
+        if seat then
             triggerDash(-seat.CFrame.LookVector)
         end
     end
