@@ -33,6 +33,15 @@ local Config = {
 
     VelocityMultiplierEnabled = false,
     VelocityMultiplier = 2,
+
+    BounceEnabled = false,
+    Bounciness = 1.2,
+    
+    CustomGravityEnabled = false,
+    GravityFactor = 1,
+    
+    BrakeDashEnabled = false,
+    BrakeDashDistance = 30,
 }
 
 local UIElements = {}
@@ -44,6 +53,12 @@ local Keybinds = {
     Jump = nil,
     ToggleVelocity = nil,
     ToggleFlyNoclip = nil,
+    ToggleBounce = nil,
+    ToggleGravity = nil,
+    ToggleBrakeDash = nil,
+    BrakeDashLeft = nil,
+    BrakeDashRight = nil,
+    BrakeDashBack = nil,
     
     PitchUp = nil,
     PitchDown = nil,
@@ -60,6 +75,12 @@ local KeybindDefaults = {
     Jump = "V",
     ToggleVelocity = "None",
     ToggleFlyNoclip = "None",
+    ToggleBounce = "None",
+    ToggleGravity = "None",
+    ToggleBrakeDash = "None",
+    BrakeDashLeft = "None",
+    BrakeDashRight = "None",
+    BrakeDashBack = "None",
     PitchDown = "LeftShift",
     PitchUp = "LeftControl",
     YawLeft = "Left",
@@ -312,6 +333,42 @@ RunService.Heartbeat:Connect(function(deltaTime)
                     base.AssemblyLinearVelocity = base.AssemblyLinearVelocity + look * (seat.ThrottleFloat * Config.VelocityMultiplier * 0.2)
                 end
 
+                -- Gravity Control (Apply counter-force dynamically based on workspace gravity)
+                if Config.CustomGravityEnabled then
+                    local mass = 0
+                    for _, p in ipairs(model:GetDescendants()) do
+                        if p:IsA("BasePart") then
+                            mass = mass + p:GetMass()
+                        end
+                    end
+                    local workspaceGravity = workspace.Gravity
+                    local targetGravity = workspaceGravity * Config.GravityFactor
+                    local counterForce = mass * (workspaceGravity - targetGravity)
+                    
+                    -- Apply force to cancel out native gravity and apply target gravity
+                    base.AssemblyLinearVelocity = base.AssemblyLinearVelocity + Vector3.new(0, (counterForce / mass) * deltaTime, 0)
+                end
+
+                -- Bounce Mode (Check ground contact & bounce back based on fall velocity)
+                if Config.BounceEnabled then
+                    local raycastParams = RaycastParams.new()
+                    raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+                    raycastParams.FilterDescendantsInstances = {char, model}
+                    
+                    -- Raycast down from vehicle base slightly below the lowest wheel
+                    local rayOrigin = base.Position
+                    local rayDirection = -Vector3.yAxis * 8
+                    local result = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+                    
+                    if result then
+                        local currentYVel = base.AssemblyLinearVelocity.Y
+                        if currentYVel < -10 then -- Fast falling
+                            local bounceImpulse = math.abs(currentYVel) * Config.Bounciness
+                            base.AssemblyLinearVelocity = Vector3.new(base.AssemblyLinearVelocity.X, bounceImpulse, base.AssemblyLinearVelocity.Z)
+                        end
+                    end
+                end
+
                 if Config.FlyEnabled then
                     local throttle = seat.ThrottleFloat
                     local steer = seat.SteerFloat
@@ -551,6 +608,80 @@ UIElements.JumpPower = JumpSection:Slider({
     end
 })
 
+UIElements.BounceEnabled = JumpSection:Toggle({
+    Title = "Enable Bounce Mode (Rubber Car)",
+    Description = "Bounces the vehicle off the ground when landing",
+    Default = false,
+    Callback = function(state)
+        Config.BounceEnabled = state
+    end
+})
+
+UIElements.Bounciness = JumpSection:Slider({
+    Title = "Bounciness Factor",
+    Value = {
+        Min = 0.5,
+        Max = 3.0,
+        Decimal = 1,
+        Default = 1.2,
+    },
+    Callback = function(val)
+        Config.Bounciness = val
+    end
+})
+
+local GravitySection = MainTab:Section({
+    Title = "Gravity Control"
+})
+
+UIElements.CustomGravityEnabled = GravitySection:Toggle({
+    Title = "Enable Gravity Control",
+    Description = "Modify gravitational pull on your vehicle",
+    Default = false,
+    Callback = function(state)
+        Config.CustomGravityEnabled = state
+    end
+})
+
+UIElements.GravityFactor = GravitySection:Slider({
+    Title = "Gravity Multiplier",
+    Description = "0 = No Gravity, 1 = Normal, -1 = Reversed",
+    Value = {
+        Min = -2.0,
+        Max = 2.0,
+        Decimal = 1,
+        Default = 1.0,
+    },
+    Callback = function(val)
+        Config.GravityFactor = val
+    end
+})
+
+local BrakeSection = MainTab:Section({
+    Title = "Sudden Brake Dash"
+})
+
+UIElements.BrakeDashEnabled = BrakeSection:Toggle({
+    Title = "Enable Sudden Brake Dash",
+    Description = "Perform instant dash when braking or pressing bind",
+    Default = false,
+    Callback = function(state)
+        Config.BrakeDashEnabled = state
+    end
+})
+
+UIElements.BrakeDashDistance = BrakeSection:Slider({
+    Title = "Dash Distance",
+    Value = {
+        Min = 10,
+        Max = 100,
+        Default = 30,
+    },
+    Callback = function(val)
+        Config.BrakeDashDistance = val
+    end
+})
+
 local RotSection = MainTab:Section({
     Title = "Keyboard Rotation (Air Control)"
 })
@@ -669,6 +800,111 @@ Keybinds.ToggleFlyNoclip = ToggleBindsSection:Keybind({
         UIElements.FlyNoclip:Set(Config.FlyNoclip)
     end
 })
+
+Keybinds.ToggleBounce = ToggleBindsSection:Keybind({
+    Title = "Toggle Bounce Mode",
+    Value = KeybindDefaults.ToggleBounce,
+    Callback = function()
+        Config.BounceEnabled = not Config.BounceEnabled
+        UIElements.BounceEnabled:Set(Config.BounceEnabled)
+    end
+})
+
+Keybinds.ToggleGravity = ToggleBindsSection:Keybind({
+    Title = "Toggle Gravity Control",
+    Value = KeybindDefaults.ToggleGravity,
+    Callback = function()
+        Config.CustomGravityEnabled = not Config.CustomGravityEnabled
+        UIElements.CustomGravityEnabled:Set(Config.CustomGravityEnabled)
+    end
+})
+
+Keybinds.ToggleBrakeDash = ToggleBindsSection:Keybind({
+    Title = "Toggle Brake Dash Mode",
+    Value = KeybindDefaults.ToggleBrakeDash,
+    Callback = function()
+        Config.BrakeDashEnabled = not Config.BrakeDashEnabled
+        UIElements.BrakeDashEnabled:Set(Config.BrakeDashEnabled)
+    end
+})
+
+local DashBindsSection = KeybindTab:Section({
+    Title = "Brake Dash Directions"
+})
+
+local function triggerDash(directionVector)
+    if not Config.BrakeDashEnabled then return end
+    local char = LocalPlayer.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    local seat = hum and hum.SeatPart
+    if seat and seat:IsA("VehicleSeat") then
+        local base = getVehicleBase(seat)
+        if base then
+            -- Muted CFrame offset
+            base.CFrame = base.CFrame + (directionVector * Config.BrakeDashDistance)
+            -- Give dynamic boost direction
+            base.AssemblyLinearVelocity = directionVector * 100
+        end
+    end
+end
+
+Keybinds.BrakeDashLeft = DashBindsSection:Keybind({
+    Title = "Dash Left",
+    Value = KeybindDefaults.BrakeDashLeft,
+    Callback = function()
+        local char = LocalPlayer.Character
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        local seat = hum and hum.SeatPart
+        if seat then
+            triggerDash(-seat.CFrame.RightVector)
+        end
+    end
+})
+
+Keybinds.BrakeDashRight = DashBindsSection:Keybind({
+    Title = "Dash Right",
+    Value = KeybindDefaults.BrakeDashRight,
+    Callback = function()
+        local char = LocalPlayer.Character
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        local seat = hum and hum.SeatPart
+        if seat then
+            triggerDash(seat.CFrame.RightVector)
+        end
+    end
+})
+
+Keybinds.BrakeDashBack = DashBindsSection:Keybind({
+    Title = "Dash Backwards",
+    Value = KeybindDefaults.BrakeDashBack,
+    Callback = function()
+        local char = LocalPlayer.Character
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        local seat = hum and hum.SeatPart
+        if seat then
+            triggerDash(-seat.CFrame.LookVector)
+        end
+    end
+})
+
+-- Listen for manual brake pedal (S key / Down Arrow) for sudden brake dash trigger
+local brakeKeys = {
+    [Enum.KeyCode.S] = true,
+    [Enum.KeyCode.Down] = true
+}
+
+UserInputService.InputBegan:Connect(function(input, processed)
+    if processed then return end
+    if Config.BrakeDashEnabled and brakeKeys[input.KeyCode] then
+        local char = LocalPlayer.Character
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        local seat = hum and hum.SeatPart
+        if seat and seat:IsA("VehicleSeat") and seat.AssemblyLinearVelocity.Magnitude > 30 then
+            -- Dash backwards if braking at high speed
+            triggerDash(-seat.CFrame.LookVector)
+        end
+    end
+end)
 
 local ControlBindsSection = KeybindTab:Section({
     Title = "Rotation Keys Configuration"
