@@ -30,6 +30,15 @@ local Config = {
 
     JumpEnabled = false,
     JumpPower = 100,
+
+    InfGrip = false,
+    VehicleNoclip = false,
+    VelocityMultiplierEnabled = false,
+    VelocityMultiplier = 2,
+    FlingEnabled = false,
+    FlingSpeed = 95000,
+    SpiderCarEnabled = false,
+    JesusCarEnabled = false,
 }
 
 local UIElements = {}
@@ -39,6 +48,12 @@ local Keybinds = {
     ToggleFly = nil,
     ToggleAir = nil,
     Jump = nil,
+    ToggleGrip = nil,
+    ToggleNoclip = nil,
+    ToggleVelocity = nil,
+    ToggleFling = nil,
+    ToggleSpider = nil,
+    ToggleJesus = nil,
     
     PitchUp = nil,
     PitchDown = nil,
@@ -172,19 +187,82 @@ local wasNoclipActive = false
 local lastVehicleModel = nil
 local lockPosition = nil
 
+local originalPhysicalProperties = {}
+local wasGripActive = false
+
 local function cleanupNoclip()
     lockPosition = nil
     if wasNoclipActive and lastVehicleModel then
-        for _, part in ipairs(lastVehicleModel:GetDescendants()) do
-            if part:IsA("BasePart") and originalCollisions[part] ~= nil then
-                part.CanCollide = originalCollisions[part]
+        pcall(function()
+            for _, part in ipairs(lastVehicleModel:GetDescendants()) do
+                if part:IsA("BasePart") and originalCollisions[part] ~= nil then
+                    part.CanCollide = originalCollisions[part]
+                end
             end
-        end
+        end)
         table.clear(originalCollisions)
         wasNoclipActive = false
         lastVehicleModel = nil
     end
 end
+
+local function cleanupGrip(model)
+    if model then
+        pcall(function()
+            for _, part in ipairs(model:GetDescendants()) do
+                if part:IsA("BasePart") and originalPhysicalProperties[part] ~= nil then
+                    if originalPhysicalProperties[part] == "Default" then
+                        part.CustomPhysicalProperties = nil
+                    else
+                        part.CustomPhysicalProperties = originalPhysicalProperties[part]
+                    end
+                end
+            end
+        end)
+    end
+    table.clear(originalPhysicalProperties)
+    wasGripActive = false
+end
+
+local function isWheelOrSeat(part, seat)
+    if part == seat then return true end
+    local name = part.Name:lower()
+    return name:find("wheel") or name:find("tire") or name == "fl" or name == "fr" or name == "rl" or name == "rr"
+end
+
+RunService.Stepped:Connect(function()
+    local char = LocalPlayer.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    local seat = hum and hum.SeatPart
+    if seat and seat:IsA("VehicleSeat") then
+        local model = seat:FindFirstAncestorOfClass("Model")
+        local shouldNoclip = (Config.FlyEnabled and Config.FlyNoclip) or Config.VehicleNoclip
+        
+        if shouldNoclip and model then
+            wasNoclipActive = true
+            lastVehicleModel = model
+            for _, part in ipairs(model:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    local skipNoclip = not Config.FlyEnabled and isWheelOrSeat(part, seat)
+                    if not skipNoclip then
+                        if originalCollisions[part] == nil then
+                            originalCollisions[part] = part.CanCollide
+                        end
+                        part.CanCollide = false
+                    else
+                        if originalCollisions[part] ~= nil then
+                            part.CanCollide = originalCollisions[part]
+                        end
+                    end
+                end
+            end
+        else
+            cleanupNoclip()
+        end
+    else
+        cleanupNoclip()
+    end
+end)
 
 RunService.Heartbeat:Connect(function(deltaTime)
     local char = LocalPlayer.Character
@@ -196,19 +274,76 @@ RunService.Heartbeat:Connect(function(deltaTime)
                 local base = getVehicleBase(seat)
                 local model = seat:FindFirstAncestorOfClass("Model")
                 
-                if Config.FlyEnabled and Config.FlyNoclip and model then
-                    wasNoclipActive = true
-                    lastVehicleModel = model
+                -- Inf Grip
+                if Config.InfGrip and model then
+                    wasGripActive = true
                     for _, part in ipairs(model:GetDescendants()) do
                         if part:IsA("BasePart") then
-                            if originalCollisions[part] == nil then
-                                originalCollisions[part] = part.CanCollide
+                            if originalPhysicalProperties[part] == nil then
+                                originalPhysicalProperties[part] = part.CustomPhysicalProperties or "Default"
                             end
-                            part.CanCollide = false
+                            part.CustomPhysicalProperties = PhysicalProperties.new(100, 100, 0, 100, 100)
                         end
                     end
+                elseif wasGripActive then
+                    cleanupGrip(model)
+                end
+
+                -- Fling Mode
+                if Config.FlingEnabled then
+                    base.AssemblyAngularVelocity = Vector3.new(0, Config.FlingSpeed, 0)
+                    if Camera.CameraSubject ~= hum then
+                        Camera.CameraSubject = hum
+                    end
                 else
-                    cleanupNoclip()
+                    if Camera.CameraSubject == hum and not Config.FlyEnabled then
+                        Camera.CameraSubject = seat
+                    end
+                end
+
+                -- Spider Car
+                if Config.SpiderCarEnabled then
+                    local raycastParams = RaycastParams.new()
+                    raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+                    raycastParams.FilterDescendantsInstances = {char, model}
+                    
+                    local origin = base.Position
+                    local direction = -base.CFrame.UpVector * 15
+                    local forwardDirection = base.CFrame.LookVector * 10
+                    
+                    local result = Workspace:Raycast(origin, direction, raycastParams) or Workspace:Raycast(origin, forwardDirection, raycastParams)
+                    if result then
+                        local normal = result.Normal
+                        local currentCFrame = base.CFrame
+                        local look = currentCFrame.LookVector
+                        local right = look:Cross(normal)
+                        if right.Magnitude > 0.001 then
+                            right = right.Unit
+                            local newLook = normal:Cross(right).Unit
+                            local targetCFrame = CFrame.fromMatrix(currentCFrame.Position, right, normal, -newLook)
+                            base.CFrame = currentCFrame:Lerp(targetCFrame, 0.15)
+                            base.AssemblyLinearVelocity = base.AssemblyLinearVelocity - normal * (20 * deltaTime)
+                        end
+                    end
+                end
+
+                -- Jesus Car
+                if Config.JesusCarEnabled then
+                    local raycastParams = RaycastParams.new()
+                    raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+                    raycastParams.FilterDescendantsInstances = {char, model}
+                    
+                    local result = Workspace:Raycast(base.Position, -Vector3.yAxis * 20, raycastParams)
+                    if result and result.Material == Enum.Material.Water then
+                        local waterHeight = result.Position.Y
+                        local carHeight = base.Position.Y
+                        local targetY = waterHeight + 3.0
+                        if carHeight < targetY + 1 then
+                            base.CFrame = CFrame.new(base.Position.X, targetY, base.Position.Z) * base.CFrame.Rotation
+                            local currentVel = base.AssemblyLinearVelocity
+                            base.AssemblyLinearVelocity = Vector3.new(currentVel.X, 0, currentVel.Z)
+                        end
+                    end
                 end
                 
                 local pitch = 0
@@ -247,6 +382,12 @@ RunService.Heartbeat:Connect(function(deltaTime)
                     end
                 end
                 
+                -- Velocity Multiplier (Inertia Boost)
+                if Config.VelocityMultiplierEnabled and math.abs(seat.ThrottleFloat) > 0.05 then
+                    local look = seat.CFrame.LookVector
+                    base.AssemblyLinearVelocity = base.AssemblyLinearVelocity + look * (seat.ThrottleFloat * Config.VelocityMultiplier * 0.2)
+                end
+
                 if Config.FlyEnabled then
                     local throttle = seat.ThrottleFloat
                     local steer = seat.SteerFloat
@@ -304,13 +445,19 @@ RunService.Heartbeat:Connect(function(deltaTime)
                     end
                 end
             else
-                cleanupNoclip()
+                if wasGripActive then
+                    cleanupGrip(lastVehicleModel)
+                end
             end
         else
-            cleanupNoclip()
+            if wasGripActive then
+                cleanupGrip(lastVehicleModel)
+            end
         end
     else
-        cleanupNoclip()
+        if wasGripActive then
+            cleanupGrip(lastVehicleModel)
+        end
     end
 end)
 
@@ -471,6 +618,88 @@ UIElements.JumpPower = JumpSection:Slider({
     end
 })
 
+local PhysicsSection = MainTab:Section({
+    Title = "Advanced Physics & Movement"
+})
+
+UIElements.InfGrip = PhysicsSection:Toggle({
+    Title = "Infinite Wheel Grip",
+    Description = "Prevents sliding and drifting on turns",
+    Default = false,
+    Callback = function(state)
+        Config.InfGrip = state
+    end
+})
+
+UIElements.VehicleNoclip = PhysicsSection:Toggle({
+    Title = "Vehicle Noclip",
+    Description = "Allows the vehicle body to pass through walls/players",
+    Default = false,
+    Callback = function(state)
+        Config.VehicleNoclip = state
+    end
+})
+
+UIElements.VelocityMultiplierEnabled = PhysicsSection:Toggle({
+    Title = "Inertia Velocity Multiplier",
+    Description = "Multiplies natural acceleration and speed using physics",
+    Default = false,
+    Callback = function(state)
+        Config.VelocityMultiplierEnabled = state
+    end
+})
+
+UIElements.VelocityMultiplier = PhysicsSection:Slider({
+    Title = "Inertia Multiplier Factor",
+    Value = {
+        Min = 1,
+        Max = 10,
+        Default = 2,
+    },
+    Callback = function(val)
+        Config.VelocityMultiplier = val
+    end
+})
+
+UIElements.FlingEnabled = PhysicsSection:Toggle({
+    Title = "Fling Mode (Tornado)",
+    Description = "Spins the car extremely fast to fling anyone you hit",
+    Default = false,
+    Callback = function(state)
+        Config.FlingEnabled = state
+    end
+})
+
+UIElements.FlingSpeed = PhysicsSection:Slider({
+    Title = "Fling Spin Speed",
+    Value = {
+        Min = 1000,
+        Max = 150000,
+        Default = 95000,
+    },
+    Callback = function(val)
+        Config.FlingSpeed = val
+    end
+})
+
+UIElements.SpiderCarEnabled = PhysicsSection:Toggle({
+    Title = "Spider-Car (Wall Climb)",
+    Description = "Allows driving up vertical walls and ceilings",
+    Default = false,
+    Callback = function(state)
+        Config.SpiderCarEnabled = state
+    end
+})
+
+UIElements.JesusCarEnabled = PhysicsSection:Toggle({
+    Title = "Jesus Car (Drive on Water)",
+    Description = "Enables driving on top of water surfaces",
+    Default = false,
+    Callback = function(state)
+        Config.JesusCarEnabled = state
+    end
+})
+
 local RotSection = MainTab:Section({
     Title = "Keyboard Rotation (Air Control)"
 })
@@ -569,6 +798,60 @@ Keybinds.Jump = ToggleBindsSection:Keybind({
                 end
             end
         end
+    end
+})
+
+Keybinds.ToggleGrip = ToggleBindsSection:Keybind({
+    Title = "Toggle Infinite Grip",
+    Value = "None",
+    Callback = function()
+        Config.InfGrip = not Config.InfGrip
+        UIElements.InfGrip:Set(Config.InfGrip)
+    end
+})
+
+Keybinds.ToggleNoclip = ToggleBindsSection:Keybind({
+    Title = "Toggle Vehicle Noclip",
+    Value = "None",
+    Callback = function()
+        Config.VehicleNoclip = not Config.VehicleNoclip
+        UIElements.VehicleNoclip:Set(Config.VehicleNoclip)
+    end
+})
+
+Keybinds.ToggleVelocity = ToggleBindsSection:Keybind({
+    Title = "Toggle Inertia Multiplier",
+    Value = "None",
+    Callback = function()
+        Config.VelocityMultiplierEnabled = not Config.VelocityMultiplierEnabled
+        UIElements.VelocityMultiplierEnabled:Set(Config.VelocityMultiplierEnabled)
+    end
+})
+
+Keybinds.ToggleFling = ToggleBindsSection:Keybind({
+    Title = "Toggle Fling Mode",
+    Value = "None",
+    Callback = function()
+        Config.FlingEnabled = not Config.FlingEnabled
+        UIElements.FlingEnabled:Set(Config.FlingEnabled)
+    end
+})
+
+Keybinds.ToggleSpider = ToggleBindsSection:Keybind({
+    Title = "Toggle Spider-Car",
+    Value = "None",
+    Callback = function()
+        Config.SpiderCarEnabled = not Config.SpiderCarEnabled
+        UIElements.SpiderCarEnabled:Set(Config.SpiderCarEnabled)
+    end
+})
+
+Keybinds.ToggleJesus = ToggleBindsSection:Keybind({
+    Title = "Toggle Jesus Car",
+    Value = "None",
+    Callback = function()
+        Config.JesusCarEnabled = not Config.JesusCarEnabled
+        UIElements.JesusCarEnabled:Set(Config.JesusCarEnabled)
     end
 })
 
