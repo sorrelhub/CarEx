@@ -417,7 +417,15 @@ RunService.Heartbeat:Connect(function(deltaTime)
                             finalVel = targetVel
                         end
                         
-                        if Config.PreserveY then
+                        local keepNaturalY = Config.PreserveY
+                        if not keepNaturalY then
+                            local raycastParams = RaycastParams.new()
+                            raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+                            raycastParams.FilterDescendantsInstances = model and {char, model} or {char}
+                            keepNaturalY = workspace:Raycast(base.Position, -Vector3.yAxis * 8, raycastParams) == nil
+                        end
+
+                        if keepNaturalY then
                             base.AssemblyLinearVelocity = Vector3.new(finalVel.X, currentVel.Y, finalVel.Z)
                         else
                             base.AssemblyLinearVelocity = finalVel
