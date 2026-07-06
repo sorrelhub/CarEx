@@ -475,6 +475,146 @@ local function openUrl(url)
     pcall(setclipboard, url)
 end
 
+local TweenService = game:GetService("TweenService")
+local inviteShown = false
+local function showDiscordInvite(callback)
+    if inviteShown then return end
+    inviteShown = true
+
+    local gui = (gethui and gethui()) or game:GetService("CoreGui")
+    local screen = Instance.new("ScreenGui")
+    screen.Name = "SorrelHubCarEx"
+    screen.Parent = gui
+    screen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    screen.ResetOnSpawn = false
+    screen.IgnoreGuiInset = true
+
+    local overlay = Instance.new("TextButton")
+    overlay.Parent = screen
+    overlay.BackgroundColor3 = Color3.new(0, 0, 0)
+    overlay.BackgroundTransparency = 0.45
+    overlay.BorderSizePixel = 0
+    overlay.Size = UDim2.fromScale(1, 1)
+    overlay.Text = ""
+    overlay.AutoButtonColor = false
+    overlay.ZIndex = 1000
+
+    local frame = Instance.new("Frame")
+    frame.Parent = screen
+    frame.AnchorPoint = Vector2.new(0.5, 0.5)
+    frame.Position = UDim2.fromScale(0.5, 0.5)
+    frame.BackgroundColor3 = Color3.fromRGB(14, 16, 20)
+    frame.BorderSizePixel = 0
+    frame.Size = UDim2.new(0, 380, 0, 0)
+    frame.AutomaticSize = Enum.AutomaticSize.Y
+    frame.ZIndex = 1001
+    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 18)
+
+    local pad = Instance.new("UIPadding", frame)
+    pad.PaddingTop = UDim.new(0, 24)
+    pad.PaddingBottom = UDim.new(0, 20)
+    pad.PaddingLeft = UDim.new(0, 24)
+    pad.PaddingRight = UDim.new(0, 24)
+
+    local layout = Instance.new("UIListLayout", frame)
+    layout.FillDirection = Enum.FillDirection.Vertical
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
+    layout.Padding = UDim.new(0, 10)
+
+    local title = Instance.new("TextLabel")
+    title.Parent = frame; title.LayoutOrder = 1
+    title.BackgroundTransparency = 1
+    title.Size = UDim2.new(1, 0, 0, 30)
+    title.Font = Enum.Font.MontserratBold; title.Text = "Car Exploit"
+    title.TextColor3 = Color3.fromRGB(255, 255, 255); title.TextSize = 22
+
+    local verLabel = Instance.new("TextLabel")
+    verLabel.Parent = frame; verLabel.LayoutOrder = 2
+    verLabel.BackgroundTransparency = 1
+    verLabel.Size = UDim2.new(1, 0, 0, 16)
+    verLabel.Font = Enum.Font.Montserrat
+    verLabel.Text = "v" .. SCRIPT_VERSION .. " by Sorrel Hub"
+    verLabel.TextColor3 = Color3.fromRGB(130, 135, 145); verLabel.TextSize = 12
+
+    local msg = Instance.new("TextLabel")
+    msg.Parent = frame; msg.LayoutOrder = 3
+    msg.BackgroundTransparency = 1
+    msg.Size = UDim2.new(1, 0, 0, 40)
+    msg.Font = Enum.Font.Montserrat
+    msg.Text = "Join our community for support, updates, and to connect with other users."
+    msg.TextColor3 = Color3.fromRGB(175, 180, 190); msg.TextSize = 14
+    msg.TextWrapped = true; msg.TextXAlignment = Enum.TextXAlignment.Center
+
+    local tweenInfo = TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    local function hoverBind(btn)
+        btn.MouseEnter:Connect(function()
+            TweenService:Create(btn, tweenInfo, {BackgroundTransparency = 0.12}):Play()
+        end)
+        btn.MouseLeave:Connect(function()
+            TweenService:Create(btn, tweenInfo, {BackgroundTransparency = 0}):Play()
+        end)
+    end
+
+    local function destroyAndCall(cb)
+        screen:Destroy()
+        if cb then cb() end
+    end
+
+    local joinBtn = Instance.new("TextButton")
+    joinBtn.Parent = frame; joinBtn.LayoutOrder = 4
+    joinBtn.BackgroundColor3 = Color3.fromRGB(30, 111, 255)
+    joinBtn.BorderSizePixel = 0
+    joinBtn.Size = UDim2.new(1, 0, 0, 44)
+    joinBtn.AutoButtonColor = false
+    joinBtn.Font = Enum.Font.MontserratBold; joinBtn.Text = "Join Discord"
+    joinBtn.TextColor3 = Color3.fromRGB(255, 255, 255); joinBtn.TextSize = 15
+    Instance.new("UICorner", joinBtn).CornerRadius = UDim.new(0, 10)
+    hoverBind(joinBtn)
+    joinBtn.MouseButton1Click:Connect(function()
+        openUrl(DISCORD_URL)
+        destroyAndCall(callback)
+    end)
+
+    local row = Instance.new("Frame")
+    row.Parent = frame; row.LayoutOrder = 5
+    row.BackgroundTransparency = 1
+    row.Size = UDim2.new(1, 0, 0, 42)
+
+    local rowLayout = Instance.new("UIListLayout", row)
+    rowLayout.FillDirection = Enum.FillDirection.Horizontal
+    rowLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    rowLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    rowLayout.Padding = UDim.new(0, 10)
+
+    local function makeSmallBtn(text, bg, txtCol, w, cb)
+        local btn = Instance.new("TextButton")
+        btn.Parent = row
+        btn.BackgroundColor3 = bg; btn.BorderSizePixel = 0
+        btn.Size = UDim2.new(0, w, 1, 0)
+        btn.AutoButtonColor = false
+        btn.Font = Enum.Font.Montserrat; btn.Text = text
+        btn.TextColor3 = txtCol; btn.TextSize = 14
+        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
+        hoverBind(btn)
+        btn.MouseButton1Click:Connect(function()
+            destroyAndCall(cb)
+        end)
+        return btn
+    end
+
+    local rowW = (380 - 48 - 10) / 2
+    makeSmallBtn("Support", Color3.fromRGB(28, 30, 36), Color3.fromRGB(175, 180, 190), rowW, function()
+        openUrl(SUPPORT_URL)
+        if callback then callback() end
+    end)
+    makeSmallBtn("Dismiss", Color3.fromRGB(22, 24, 28), Color3.fromRGB(130, 135, 145), rowW, function()
+        if callback then callback() end
+    end)
+end
+
+showDiscordInvite()
+
 local Window = WindUI:CreateWindow({
     Title = "Car Exploit",
     Author = "by Sorrel Hub",
@@ -1167,35 +1307,3 @@ CreditsSection:Paragraph({
         },
     },
 })
-
-task.spawn(function()
-    task.wait(0.5)
-    local dialog = Window:Dialog({
-        Icon = "message-circle",
-        Title = "Car Exploit",
-        Content = "Join our community for support, updates, and to connect with other users.",
-        Buttons = {
-            {
-                Title = "Join Discord",
-                Icon = "message-circle",
-                Variant = "Primary",
-                Callback = function()
-                    openUrl(DISCORD_URL)
-                end,
-            },
-            {
-                Title = "Support",
-                Icon = "heart",
-                Callback = function()
-                    openUrl(SUPPORT_URL)
-                end,
-            },
-            {
-                Title = "Dismiss",
-                Icon = "x",
-                Callback = function() end,
-            },
-        },
-    })
-    dialog:Show()
-end)
