@@ -334,19 +334,21 @@ RunService.Heartbeat:Connect(function(deltaTime)
                         end
                     end
                     
-                    -- Pitch and roll: use angular velocity for direct rotation
-                    -- Yaw: use CFrame for ground steering (EasySteer compatibility)
-                    if pitch ~= 0 or roll ~= 0 then
-                        local rotSpeed = math.rad(Config.RotationSpeed)
-                        local angVel = base.CFrame.RightVector * (pitch * rotSpeed) + base.CFrame.LookVector * (roll * rotSpeed)
-                        base.AssemblyAngularVelocity = angVel
-                    else
-                        base.AssemblyAngularVelocity = Vector3.zero
+                    -- Pure CFrame rotation (rage-style, no physics)
+                    -- Each axis applied separately to avoid gimbal lock
+                    local rotSpeed = math.rad(Config.RotationSpeed) * deltaTime
+                    local cf = base.CFrame
+                    if pitch ~= 0 then
+                        cf = cf * CFrame.Angles(pitch * rotSpeed, 0, 0)
                     end
                     if yaw ~= 0 then
-                        local rotSpeed = math.rad(Config.RotationSpeed) * deltaTime
-                        base.CFrame = base.CFrame * CFrame.Angles(0, yaw * rotSpeed, 0)
+                        cf = cf * CFrame.Angles(0, yaw * rotSpeed, 0)
                     end
+                    if roll ~= 0 then
+                        cf = cf * CFrame.Angles(0, 0, roll * rotSpeed)
+                    end
+                    base.CFrame = cf
+                    base.AssemblyAngularVelocity = Vector3.zero
                 end
                 
                 -- Velocity Multiplier (Inertia Boost)
@@ -391,19 +393,14 @@ RunService.Heartbeat:Connect(function(deltaTime)
                         
                         local velocity = seat.CFrame.LookVector * (throttle * Config.FlySpeed)
                         base.AssemblyLinearVelocity = velocity
-                        -- Only zero angular velocity if no pitch/roll rotation is active
-                        if pitch == 0 and roll == 0 then
-                            base.AssemblyAngularVelocity = Vector3.zero
-                        end
+                        base.AssemblyAngularVelocity = Vector3.zero
                     else
                         if not lockPosition then
                             lockPosition = base.CFrame
                         end
                         base.CFrame = lockPosition
                         base.AssemblyLinearVelocity = Vector3.zero
-                        if pitch == 0 and roll == 0 then
-                            base.AssemblyAngularVelocity = Vector3.zero
-                        end
+                        base.AssemblyAngularVelocity = Vector3.zero
                     end
                     
                 -- Speed Boost
