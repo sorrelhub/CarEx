@@ -422,7 +422,8 @@ RunService.Heartbeat:Connect(function(deltaTime)
                             local raycastParams = RaycastParams.new()
                             raycastParams.FilterType = Enum.RaycastFilterType.Exclude
                             raycastParams.FilterDescendantsInstances = model and {char, model} or {char}
-                            keepNaturalY = workspace:Raycast(base.Position, -Vector3.yAxis * 8, raycastParams) == nil
+                            local airborne = workspace:Raycast(base.Position, -Vector3.yAxis * 8, raycastParams) == nil
+                            keepNaturalY = airborne and math.abs(finalVel.Y) < 2
                         end
 
                         if keepNaturalY then
