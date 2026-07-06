@@ -9,19 +9,26 @@ By downloading, copying, installing, executing, or otherwise using this Software
 1. LICENSE GRANT AND PERMITTED USE
 Subject to the terms of this Agreement, the Author grants you a personal, non-exclusive, non-transferable, non-sublicensable, revocable license to execute and run the Software in its compiled/original form solely for your own personal, non-commercial entertainment purposes.
 
-2. RESTRICTIONS AND PROHIBITIONS
+2. PERMITTED DISTRIBUTION
+You are permitted to share and redistribute the Software's loadstring execution snippet (i.e. the one-line loader that fetches the script from the original GitHub source) in Telegram channels, Discord servers, forums, social media, YouTube videos, and similar platforms, provided that ALL of the following conditions are met:
+- The shared snippet must load the Software exclusively from the original raw GitHub source URL. You may not host, mirror, or proxy the script on your own servers or alternative URLs.
+- You must clearly credit the original author (Alfredo Swagger / Winner) and Sorrel Hub in every post, message, or publication where the snippet is shared.
+- You must not imply that the Software is your own creation, or that you are affiliated with the Author or Sorrel Hub, unless you have explicit written permission.
+- You must not bundle, wrap, or embed the loadstring snippet inside paid products, subscription-gated loaders, or any system that charges users for access.
+
+3. RESTRICTIONS AND PROHIBITIONS
 You explicitly agree NOT to:
-- Copy, duplicate, reproduce, or store the Software, its source code, or any part thereof, on any public or private server, website, or hosting platform (including but not limited to GitHub forks, ScriptBlox, or other exploit databases), unless referencing the original raw GitHub source URL.
+- Copy, duplicate, reproduce, or store the Software's source code or any substantial part thereof on any public or private server, website, or hosting platform (including but not limited to GitHub forks, ScriptBlox, or other exploit databases). This does not restrict sharing the loadstring snippet as described in Section 2.
 - Modify, alter, patch, merge, translate, adapt, or create derivative works based upon the Software or any part of it.
-- Redistribute, publish, host, lease, rent, sublicense, or sell this Software, its source code, or any derivative works, for commercial or non-commercial purposes.
+- Redistribute, publish, host, or sell the Software's full source code or any derivative works, for commercial or non-commercial purposes.
 - Decompile, disassemble, decrypt, extract, or reverse engineer the Software, or attempt to derive the source code from its execution.
 - Use the Software, its branding, or its assets in any commercial products, paid scripts, or subscription-based loader systems.
 - Remove, alter, or obscure any copyright notices, author attributions, or license references contained in the Software.
 
-3. COPYRIGHT AND OWNERSHIP
+4. COPYRIGHT AND OWNERSHIP
 All title, ownership rights, intellectual property rights, and copyrights in and to the Software (including but not limited to any code, algorithms, visual interfaces, assets, and documentation) are owned exclusively by Alfredo Swagger / Winner. This Agreement does not grant you any ownership rights to the Software.
 
-4. THIRD-PARTY COMPONENTS
+5. THIRD-PARTY COMPONENTS
 This Software uses the following third-party library, which is subject to its own license:
 
   WindUI - Copyright (c) 2026 Footages
@@ -33,13 +40,13 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 
 The third-party component is provided "AS IS", without warranty of any kind. The inclusion of WindUI does not affect the proprietary status of Car Exploit itself.
 
-5. NO WARRANTY & LIMITATION OF LIABILITY
+6. NO WARRANTY & LIMITATION OF LIABILITY
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES, BAN, ACCOUNT TERMINATION, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-6. TERMINATION
+7. TERMINATION
 This license is effective until terminated. Your rights under this Agreement will terminate automatically without notice if you fail to comply with any term(s) of this Agreement. Upon termination, you must cease all use of the Software.
 
-7. CONTACT AND PERMISSIONS
+8. CONTACT AND PERMISSIONS
 Any deviation from these terms, including commercial usage, integration into other exploit hubs/scripts, or code modifications, requires explicit written permission from the Author.
 
 For inquiries, contact the Author:
