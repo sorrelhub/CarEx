@@ -14,19 +14,34 @@ You explicitly agree NOT to:
 - Copy, duplicate, reproduce, or store the Software, its source code, or any part thereof, on any public or private server, website, or hosting platform (including but not limited to GitHub forks, ScriptBlox, or other exploit databases), unless referencing the original raw GitHub source URL.
 - Modify, alter, patch, merge, translate, adapt, or create derivative works based upon the Software or any part of it.
 - Redistribute, publish, host, lease, rent, sublicense, or sell this Software, its source code, or any derivative works, for commercial or non-commercial purposes.
-- Decompile, disassemble, decrypt, extract, decrypt, or reverse engineer the Software, or attempt to derive the source code from its execution.
+- Decompile, disassemble, decrypt, extract, or reverse engineer the Software, or attempt to derive the source code from its execution.
 - Use the Software, its branding, or its assets in any commercial products, paid scripts, or subscription-based loader systems.
+- Remove, alter, or obscure any copyright notices, author attributions, or license references contained in the Software.
 
 3. COPYRIGHT AND OWNERSHIP
 All title, ownership rights, intellectual property rights, and copyrights in and to the Software (including but not limited to any code, algorithms, visual interfaces, assets, and documentation) are owned exclusively by Alfredo Swagger / Winner. This Agreement does not grant you any ownership rights to the Software.
 
-4. NO WARRANTY & LIMITATION OF LIABILITY
+4. THIRD-PARTY COMPONENTS
+This Software uses the following third-party library, which is subject to its own license:
+
+  WindUI - Copyright (c) 2026 Footages
+  Licensed under the MIT License.
+  https://github.com/Footagesus/WindUI
+
+The MIT License for WindUI requires the following notice be preserved:
+Permission is hereby granted, free of charge, to any person obtaining a copy of WindUI and associated documentation files, to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, subject to the condition that the above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+The third-party component is provided "AS IS", without warranty of any kind. The inclusion of WindUI does not affect the proprietary status of Car Exploit itself.
+
+5. NO WARRANTY & LIMITATION OF LIABILITY
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES, BAN, ACCOUNT TERMINATION, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-5. TERMINATION
+6. TERMINATION
 This license is effective until terminated. Your rights under this Agreement will terminate automatically without notice if you fail to comply with any term(s) of this Agreement. Upon termination, you must cease all use of the Software.
 
-6. CONTACT AND PERMISSIONS
+7. CONTACT AND PERMISSIONS
 Any deviation from these terms, including commercial usage, integration into other exploit hubs/scripts, or code modifications, requires explicit written permission from the Author.
 
-For inquiries, contact the Author directly on Discord: Alfredo Swagger / Winner.
+For inquiries, contact the Author:
+- Website: https://sorrelhub.xyz/support
+- Discord: https://sorrelhub.xyz/discord
