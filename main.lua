@@ -466,7 +466,35 @@ RunService.Heartbeat:Connect(function(deltaTime)
 end)
 
 local inviteShown = false
+local function showToast(text)
+    local gui = (gethui and gethui()) or game:GetService("CoreGui")
+    local toast = Instance.new("TextLabel")
+    toast.Parent = gui
+    toast.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    toast.AnchorPoint = Vector2.new(0.5, 0)
+    toast.Position = UDim2.fromScale(0.5, 0.02)
+    toast.Size = UDim2.new(0, 0, 0, 34)
+    toast.AutomaticSize = Enum.AutomaticSize.X
+    toast.BackgroundColor3 = Color3.fromRGB(14, 16, 20)
+    toast.BackgroundTransparency = 1
+    toast.BorderSizePixel = 0
+    toast.Font = Enum.Font.Montserrat; toast.Text = text
+    toast.TextColor3 = Color3.fromRGB(255, 255, 255); toast.TextSize = 14
+    toast.TextTransparency = 1
+    Instance.new("UICorner", toast).CornerRadius = UDim.new(0, 10)
+    local pad = Instance.new("UIPadding", toast)
+    pad.PaddingLeft = UDim.new(0, 16); pad.PaddingRight = UDim.new(0, 16)
+
+    local info = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    TweenService:Create(toast, info, {BackgroundTransparency = 0, TextTransparency = 0}):Play()
+    task.delay(2, function()
+        TweenService:Create(toast, info, {BackgroundTransparency = 1, TextTransparency = 1}):Play()
+        task.delay(0.3, toast.Destroy, toast)
+    end)
+end
+
 local function openUrl(url)
+    showToast("Copied to clipboard")
     local req = request or http_request or (syn and syn.request) or (http and http.request)
     local ok, result = pcall(req, {Url = url, Method = "GET"})
     pcall(setclipboard, url)
@@ -504,11 +532,6 @@ local function showDiscordInvite(callback)
     frame.AutomaticSize = Enum.AutomaticSize.Y
     frame.ZIndex = 1001
     Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 18)
-    local stroke = Instance.new("UIStroke", frame)
-    stroke.Color = Color3.fromRGB(30, 111, 255)
-    stroke.Thickness = 1
-    stroke.Transparency = 0.72
-
     local pad = Instance.new("UIPadding", frame)
     pad.PaddingTop = UDim.new(0, 24)
     pad.PaddingBottom = UDim.new(0, 20)
@@ -525,14 +548,14 @@ local function showDiscordInvite(callback)
     title.Parent = frame; title.LayoutOrder = 1
     title.BackgroundTransparency = 1
     title.Size = UDim2.new(1, 0, 0, 30)
-    title.Font = Enum.Font.GothamBold; title.Text = "Car Exploit"
+    title.Font = Enum.Font.MontserratBold; title.Text = "Car Exploit"
     title.TextColor3 = Color3.fromRGB(255, 255, 255); title.TextSize = 22
 
     local verLabel = Instance.new("TextLabel")
     verLabel.Parent = frame; verLabel.LayoutOrder = 2
     verLabel.BackgroundTransparency = 1
     verLabel.Size = UDim2.new(1, 0, 0, 16)
-    verLabel.Font = Enum.Font.Gotham
+    verLabel.Font = Enum.Font.Montserrat
     verLabel.Text = "v" .. SCRIPT_VERSION .. " by Sorrel Hub"
     verLabel.TextColor3 = Color3.fromRGB(130, 135, 145); verLabel.TextSize = 12
 
@@ -540,7 +563,7 @@ local function showDiscordInvite(callback)
     msg.Parent = frame; msg.LayoutOrder = 3
     msg.BackgroundTransparency = 1
     msg.Size = UDim2.new(1, 0, 0, 40)
-    msg.Font = Enum.Font.Gotham
+    msg.Font = Enum.Font.Montserrat
     msg.Text = "Join our community for support, updates, and to connect with other users."
     msg.TextColor3 = Color3.fromRGB(175, 180, 190); msg.TextSize = 14
     msg.TextWrapped = true; msg.TextXAlignment = Enum.TextXAlignment.Center
@@ -579,7 +602,7 @@ local function showDiscordInvite(callback)
         btn.Size = UDim2.new(0, 0, 1, 0)
         btn.AutomaticSize = Enum.AutomaticSize.X
         btn.AutoButtonColor = false
-        btn.Font = Enum.Font.GothamSemibold; btn.Text = text
+        btn.Font = Enum.Font.Montserrat; btn.Text = text
         btn.TextColor3 = Color3.fromRGB(88, 130, 255); btn.TextSize = 12
         local linkTween = TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
         btn.MouseEnter:Connect(function()
@@ -603,7 +626,7 @@ local function showDiscordInvite(callback)
     joinBtn.BorderSizePixel = 0
     joinBtn.Size = UDim2.new(1, 0, 0, 44)
     joinBtn.AutoButtonColor = false
-    joinBtn.Font = Enum.Font.GothamBold; joinBtn.Text = "Join Discord"
+    joinBtn.Font = Enum.Font.MontserratBold; joinBtn.Text = "Join Discord"
     joinBtn.TextColor3 = Color3.fromRGB(255, 255, 255); joinBtn.TextSize = 15
     Instance.new("UICorner", joinBtn).CornerRadius = UDim.new(0, 10)
     hoverBind(joinBtn)
@@ -629,7 +652,7 @@ local function showDiscordInvite(callback)
         btn.BackgroundColor3 = bg; btn.BorderSizePixel = 0
         btn.Size = UDim2.new(0, w, 1, 0)
         btn.AutoButtonColor = false
-        btn.Font = Enum.Font.GothamSemibold; btn.Text = text
+        btn.Font = Enum.Font.Montserrat; btn.Text = text
         btn.TextColor3 = txtCol; btn.TextSize = 14
         Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
         hoverBind(btn)
