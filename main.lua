@@ -37,12 +37,6 @@ local Config = {
 
     BounceEnabled = false,
     Bounciness = 1.2,
-    
-    CustomGravityEnabled = false,
-    GravityFactor = 1,
-    
-    BrakeDashEnabled = false,
-    BrakeDashDistance = 30,
 
     SpeedLimiterEnabled = false,
     MaxSpeedLimit = 100,
@@ -60,12 +54,7 @@ local Keybinds = {
     ToggleVelocity = nil,
     ToggleFlyNoclip = nil,
     ToggleBounce = nil,
-    ToggleGravity = nil,
-    ToggleBrakeDash = nil,
     ToggleSpeedLimiter = nil,
-    BrakeDashLeft = nil,
-    BrakeDashRight = nil,
-    BrakeDashBack = nil,
     
     PitchUp = nil,
     PitchDown = nil,
@@ -83,12 +72,7 @@ local KeybindDefaults = {
     ToggleVelocity = "None",
     ToggleFlyNoclip = "None",
     ToggleBounce = "None",
-    ToggleGravity = "None",
-    ToggleBrakeDash = "None",
     ToggleSpeedLimiter = "None",
-    BrakeDashLeft = "None",
-    BrakeDashRight = "None",
-    BrakeDashBack = "None",
     PitchDown = "LeftShift",
     PitchUp = "LeftControl",
     YawLeft = "Left",
@@ -319,6 +303,7 @@ RunService.Heartbeat:Connect(function(deltaTime)
             local seat = hum.SeatPart
             if seat and seat:IsA("VehicleSeat") then
                 local base = getVehicleBase(seat)
+                local model = seat:FindFirstAncestorOfClass("Model")
                 
                 local pitch = 0
                 local yaw = 0
@@ -360,25 +345,6 @@ RunService.Heartbeat:Connect(function(deltaTime)
                 if Config.VelocityMultiplierEnabled and math.abs(seat.ThrottleFloat) > 0.05 then
                     local look = seat.CFrame.LookVector
                     base.AssemblyLinearVelocity = base.AssemblyLinearVelocity + look * (seat.ThrottleFloat * Config.VelocityMultiplier * 0.2)
-                end
-
-                -- Gravity Control (Apply counter-force dynamically based on workspace gravity)
-                if Config.CustomGravityEnabled then
-                    local model = seat:FindFirstAncestorOfClass("Model")
-                    if model then
-                        local mass = 0
-                        for _, p in ipairs(model:GetDescendants()) do
-                            if p:IsA("BasePart") then
-                                mass = mass + p:GetMass()
-                            end
-                        end
-                        if mass > 0 then
-                            local workspaceGravity = workspace.Gravity
-                            local targetGravity = workspaceGravity * Config.GravityFactor
-                            local counterForce = mass * (workspaceGravity - targetGravity)
-                            base.AssemblyLinearVelocity = base.AssemblyLinearVelocity + Vector3.new(0, (counterForce / mass) * deltaTime, 0)
-                        end
-                    end
                 end
 
                 -- Bounce Mode (Check ground contact & bounce back based on fall velocity)
@@ -939,58 +905,6 @@ UIElements.Bounciness = JumpSection:Slider({
     end
 })
 
-local GravitySection = MainTab:Section({
-    Title = "Gravity Control"
-})
-
-UIElements.CustomGravityEnabled = GravitySection:Toggle({
-    Title = "Enable Gravity Control",
-    Desc = "Modify gravitational pull on your vehicle",
-    Value = false,
-    Callback = function(state)
-        Config.CustomGravityEnabled = state
-    end
-})
-
-UIElements.GravityFactor = GravitySection:Slider({
-    Title = "Gravity Multiplier",
-    Desc = "0 = No Gravity, 1 = Normal, -1 = Reversed",
-    Value = {
-        Min = -1.0,
-        Max = 1.0,
-        Default = 1.0,
-    },
-    Step = 0.1,
-    Callback = function(val)
-        Config.GravityFactor = val
-    end
-})
-
-local BrakeSection = MainTab:Section({
-    Title = "Sudden Brake Dash"
-})
-
-UIElements.BrakeDashEnabled = BrakeSection:Toggle({
-    Title = "Enable Sudden Brake Dash",
-    Desc = "Perform instant dash when braking or pressing bind",
-    Value = false,
-    Callback = function(state)
-        Config.BrakeDashEnabled = state
-    end
-})
-
-UIElements.BrakeDashDistance = BrakeSection:Slider({
-    Title = "Dash Distance",
-    Value = {
-        Min = 10,
-        Max = 100,
-        Default = 30,
-    },
-    Callback = function(val)
-        Config.BrakeDashDistance = val
-    end
-})
-
 local RotSection = MainTab:Section({
     Title = "Keyboard Rotation (Air Control)"
 })
@@ -1105,62 +1019,12 @@ Keybinds.ToggleBounce = ToggleBindsSection:Keybind({
     Value = KeybindDefaults.ToggleBounce,
 })
 
-Keybinds.ToggleGravity = ToggleBindsSection:Keybind({
-    Title = "Toggle Gravity Control",
-    Value = KeybindDefaults.ToggleGravity,
-})
-
-Keybinds.ToggleBrakeDash = ToggleBindsSection:Keybind({
-    Title = "Toggle Brake Dash Mode",
-    Value = KeybindDefaults.ToggleBrakeDash,
-})
-
 Keybinds.ToggleSpeedLimiter = ToggleBindsSection:Keybind({
     Title = "Toggle Speed Limiter",
     Value = KeybindDefaults.ToggleSpeedLimiter,
 })
 
-local DashBindsSection = KeybindTab:Section({
-    Title = "Brake Dash Directions"
-})
-
-local function triggerDash(directionVector)
-    if not Config.BrakeDashEnabled then return end
-    local char = LocalPlayer.Character
-    local hum = char and char:FindFirstChildOfClass("Humanoid")
-    local seat = hum and hum.SeatPart
-    if seat and seat:IsA("VehicleSeat") then
-        local base = getVehicleBase(seat)
-        if base then
-            -- Muted CFrame offset
-            base.CFrame = base.CFrame + (directionVector * Config.BrakeDashDistance)
-            -- Give dynamic boost direction
-            base.AssemblyLinearVelocity = directionVector * 100
-        end
-    end
-end
-
-Keybinds.BrakeDashLeft = DashBindsSection:Keybind({
-    Title = "Dash Left",
-    Value = KeybindDefaults.BrakeDashLeft,
-})
-
-Keybinds.BrakeDashRight = DashBindsSection:Keybind({
-    Title = "Dash Right",
-    Value = KeybindDefaults.BrakeDashRight,
-})
-
-Keybinds.BrakeDashBack = DashBindsSection:Keybind({
-    Title = "Dash Backwards",
-    Value = KeybindDefaults.BrakeDashBack,
-})
-
--- Unified UserInputService.InputBegan listener for keybind triggers and manual brake pedal
-local brakeKeys = {
-    [Enum.KeyCode.S] = true,
-    [Enum.KeyCode.Down] = true
-}
-
+-- Unified UserInputService.InputBegan listener for keybind triggers
 local function matchesBind(bindObj, input, pressedKey)
     if not bindObj or not bindObj.Value or bindObj.Value == "None" then return false end
     local bindVal = bindObj.Value
@@ -1179,16 +1043,6 @@ UserInputService.InputBegan:Connect(function(input, processed)
     local pressedKey = input.KeyCode
     if pressedKey == Enum.KeyCode.Unknown then return end
 
-    if Config.BrakeDashEnabled and brakeKeys[pressedKey] then
-        local char = LocalPlayer.Character
-        local hum = char and char:FindFirstChildOfClass("Humanoid")
-        local seat = hum and hum.SeatPart
-        if seat and seat:IsA("VehicleSeat") and seat.AssemblyLinearVelocity.Magnitude > 30 then
-            triggerDash(-seat.CFrame.LookVector)
-            return
-        end
-    end
-    
     -- Check discrete keybind triggers
     if matchesBind(Keybinds.ToggleSpeed, input, pressedKey) then
         Config.SpeedBoostEnabled = not Config.SpeedBoostEnabled
@@ -1232,41 +1086,10 @@ UserInputService.InputBegan:Connect(function(input, processed)
         if UIElements.BounceEnabled then
             UIElements.BounceEnabled:Set(Config.BounceEnabled)
         end
-    elseif matchesBind(Keybinds.ToggleGravity, input, pressedKey) then
-        Config.CustomGravityEnabled = not Config.CustomGravityEnabled
-        if UIElements.CustomGravityEnabled then
-            UIElements.CustomGravityEnabled:Set(Config.CustomGravityEnabled)
-        end
-    elseif matchesBind(Keybinds.ToggleBrakeDash, input, pressedKey) then
-        Config.BrakeDashEnabled = not Config.BrakeDashEnabled
-        if UIElements.BrakeDashEnabled then
-            UIElements.BrakeDashEnabled:Set(Config.BrakeDashEnabled)
-        end
     elseif matchesBind(Keybinds.ToggleSpeedLimiter, input, pressedKey) then
         Config.SpeedLimiterEnabled = not Config.SpeedLimiterEnabled
         if UIElements.SpeedLimiterEnabled then
             UIElements.SpeedLimiterEnabled:Set(Config.SpeedLimiterEnabled)
-        end
-    elseif matchesBind(Keybinds.BrakeDashLeft, input, pressedKey) then
-        local char = LocalPlayer.Character
-        local hum = char and char:FindFirstChildOfClass("Humanoid")
-        local seat = hum and hum.SeatPart
-        if seat then
-            triggerDash(-seat.CFrame.RightVector)
-        end
-    elseif matchesBind(Keybinds.BrakeDashRight, input, pressedKey) then
-        local char = LocalPlayer.Character
-        local hum = char and char:FindFirstChildOfClass("Humanoid")
-        local seat = hum and hum.SeatPart
-        if seat then
-            triggerDash(seat.CFrame.RightVector)
-        end
-    elseif matchesBind(Keybinds.BrakeDashBack, input, pressedKey) then
-        local char = LocalPlayer.Character
-        local hum = char and char:FindFirstChildOfClass("Humanoid")
-        local seat = hum and hum.SeatPart
-        if seat then
-            triggerDash(-seat.CFrame.LookVector)
         end
     end
 end)
