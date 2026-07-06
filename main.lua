@@ -46,6 +46,8 @@ local Config = {
 
     SpeedLimiterEnabled = false,
     MaxSpeedLimit = 100,
+
+    MenuToggleKey = "RightControl",
 }
 
 local UIElements = {}
@@ -298,8 +300,9 @@ RunService.Heartbeat:Connect(function(deltaTime)
             if not currentVisible then
                 WindUI:Notify({
                     Title = "UI Hidden",
-                    Content = "Press RightAlt to reopen the menu",
-                    Duration = 4
+                    Content = "Press " .. formatKeyName(Config.MenuToggleKey) .. " to reopen the menu",
+                    Duration = 4,
+                    Icon = "info",
                 })
             end
         end
@@ -625,11 +628,48 @@ local Window = WindUI:CreateWindow({
     Size = UDim2.fromOffset(580, 460),
     NewElements = true,
     HideSearchBar = false,
-    ToggleKey = Enum.KeyCode.RightAlt,
+    ToggleKey = Enum.KeyCode.None,
     OpenButton = {
         Enabled = false
     }
 })
+
+local function getToggleKeyCode()
+    local ok, code = pcall(function()
+        return Enum.KeyCode[Config.MenuToggleKey]
+    end)
+    return ok and code or nil
+end
+
+local function formatKeyName(keyName)
+    if keyName == "None" then return "None" end
+    local ok, code = pcall(function()
+        return Enum.KeyCode[keyName]
+    end)
+    if ok and code then
+        return code.Name
+    end
+    return keyName
+end
+
+UserInputService.InputBegan:Connect(function(input, processed)
+    if processed then return end
+    if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
+    local expected = getToggleKeyCode()
+    if expected and input.KeyCode == expected then
+        Window:Toggle()
+    end
+end)
+
+task.defer(function()
+    task.wait(1)
+    WindUI:Notify({
+        Title = "Car Exploit Loaded",
+        Content = "Press " .. formatKeyName(Config.MenuToggleKey) .. " to toggle menu",
+        Duration = 5,
+        Icon = "info",
+    })
+end)
 
 local MainTab = Window:Tab({
     Title = "Main",
@@ -964,6 +1004,18 @@ UIElements.RollEnabled = RotSection:Toggle({
     Callback = function(state)
         Config.RollEnabled = state
     end
+})
+
+local MenuSection = KeybindTab:Section({
+    Title = "Menu Settings"
+})
+
+UIElements.MenuToggleKey = MenuSection:Keybind({
+    Title = "Toggle Menu Key",
+    Value = Config.MenuToggleKey,
+    Callback = function(val)
+        Config.MenuToggleKey = val
+    end,
 })
 
 local ToggleBindsSection = KeybindTab:Section({
