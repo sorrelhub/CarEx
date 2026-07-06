@@ -334,12 +334,14 @@ RunService.Heartbeat:Connect(function(deltaTime)
                         end
                     end
                     
-                    -- Pitch and roll: use angular velocity for momentum-based rotation
+                    -- Pitch and roll: use angular velocity for direct rotation
                     -- Yaw: use CFrame for ground steering (EasySteer compatibility)
                     if pitch ~= 0 or roll ~= 0 then
                         local rotSpeed = math.rad(Config.RotationSpeed)
                         local angVel = base.CFrame.RightVector * (pitch * rotSpeed) + base.CFrame.LookVector * (roll * rotSpeed)
                         base.AssemblyAngularVelocity = angVel
+                    else
+                        base.AssemblyAngularVelocity = Vector3.zero
                     end
                     if yaw ~= 0 then
                         local rotSpeed = math.rad(Config.RotationSpeed) * deltaTime
