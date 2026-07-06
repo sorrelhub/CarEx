@@ -334,10 +334,16 @@ RunService.Heartbeat:Connect(function(deltaTime)
                         end
                     end
                     
-                    if pitch ~= 0 or yaw ~= 0 or roll ~= 0 then
+                    -- Pitch and roll: use angular velocity for momentum-based rotation
+                    -- Yaw: use CFrame for ground steering (EasySteer compatibility)
+                    if pitch ~= 0 or roll ~= 0 then
+                        local rotSpeed = math.rad(Config.RotationSpeed)
+                        local angVel = base.CFrame.RightVector * (pitch * rotSpeed) + base.CFrame.LookVector * (roll * rotSpeed)
+                        base.AssemblyAngularVelocity = angVel
+                    end
+                    if yaw ~= 0 then
                         local rotSpeed = math.rad(Config.RotationSpeed) * deltaTime
-                        base.CFrame = base.CFrame * CFrame.Angles(pitch * rotSpeed, yaw * rotSpeed, roll * rotSpeed)
-                        base.AssemblyAngularVelocity = Vector3.zero
+                        base.CFrame = base.CFrame * CFrame.Angles(0, yaw * rotSpeed, 0)
                     end
                 end
                 
@@ -401,7 +407,6 @@ RunService.Heartbeat:Connect(function(deltaTime)
                     if Config.EasySteer and math.abs(steer) > 0.05 then
                         local steerSpeed = math.rad(Config.EasySteerRate) * deltaTime
                         base.CFrame = base.CFrame * CFrame.Angles(0, -steer * steerSpeed, 0)
-                        base.AssemblyAngularVelocity = Vector3.zero
                     end
                     
                     if math.abs(throttle) > 0.05 then
