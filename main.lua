@@ -389,14 +389,19 @@ RunService.Heartbeat:Connect(function(deltaTime)
                         
                         local velocity = seat.CFrame.LookVector * (throttle * Config.FlySpeed)
                         base.AssemblyLinearVelocity = velocity
-                        base.AssemblyAngularVelocity = Vector3.zero
+                        -- Only zero angular velocity if no pitch/roll rotation is active
+                        if pitch == 0 and roll == 0 then
+                            base.AssemblyAngularVelocity = Vector3.zero
+                        end
                     else
                         if not lockPosition then
                             lockPosition = base.CFrame
                         end
                         base.CFrame = lockPosition
                         base.AssemblyLinearVelocity = Vector3.zero
-                        base.AssemblyAngularVelocity = Vector3.zero
+                        if pitch == 0 and roll == 0 then
+                            base.AssemblyAngularVelocity = Vector3.zero
+                        end
                     end
                     
                 -- Speed Boost
@@ -428,7 +433,7 @@ RunService.Heartbeat:Connect(function(deltaTime)
                             raycastParams.FilterType = Enum.RaycastFilterType.Exclude
                             raycastParams.FilterDescendantsInstances = model and {char, model} or {char}
                             local airborne = workspace:Raycast(base.Position, -Vector3.yAxis * 8, raycastParams) == nil
-                            keepNaturalY = airborne and math.abs(lookVector.Y) < 0.03
+                            keepNaturalY = airborne and math.abs(lookVector.Y) < 0.3
                         end
 
                         if keepNaturalY then
