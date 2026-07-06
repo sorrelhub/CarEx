@@ -47,7 +47,7 @@ local Config = {
     SpeedLimiterEnabled = false,
     MaxSpeedLimit = 100,
 
-    MenuToggleKey = "RightControl",
+    MenuToggleKey = "RightAlt",
 }
 
 local UIElements = {}
@@ -140,6 +140,9 @@ end
 
 local function saveConfigCustom(name)
     if not writefile then return false, "writefile not supported" end
+    if UIElements.MenuToggleKey and UIElements.MenuToggleKey.Value then
+        Config.MenuToggleKey = UIElements.MenuToggleKey.Value
+    end
     
     local data = {
         Settings = {},
@@ -291,6 +294,7 @@ RunService.Stepped:Connect(function()
 end)
 
 local lastMenuVisible = true
+local formatKeyName
 
 RunService.Heartbeat:Connect(function(deltaTime)
     if Window then
@@ -300,7 +304,7 @@ RunService.Heartbeat:Connect(function(deltaTime)
             if not currentVisible then
                 WindUI:Notify({
                     Title = "UI Hidden",
-                    Content = "Press " .. formatKeyName(Config.MenuToggleKey) .. " to reopen the menu",
+                    Content = "Press " .. formatKeyName() .. " to reopen the menu",
                     Duration = 4,
                     Icon = "info",
                 })
@@ -628,52 +632,68 @@ local Window = WindUI:CreateWindow({
     Size = UDim2.fromOffset(580, 460),
     NewElements = true,
     HideSearchBar = false,
-    ToggleKey = Enum.KeyCode.None,
     OpenButton = {
         Enabled = false
     }
 })
 
+pcall(function()
+    Window:SetToggleKey(nil)
+end)
+
+local blockedMenuKeys = {
+    Escape = true,
+    Delete = true,
+    Backspace = true,
+    Unknown = true,
+    MouseLeftButton = true,
+    MouseRightButton = true,
+}
+
+local function getMenuToggleKeyName()
+    local keyName = Config.MenuToggleKey
+    if UIElements.MenuToggleKey and UIElements.MenuToggleKey.Value then
+        keyName = UIElements.MenuToggleKey.Value
+    end
+    if type(keyName) ~= "string" or keyName == "" or blockedMenuKeys[keyName] then
+        keyName = "RightAlt"
+        Config.MenuToggleKey = keyName
+        if UIElements.MenuToggleKey then
+            pcall(function()
+                UIElements.MenuToggleKey:Set(keyName)
+            end)
+        end
+    else
+        Config.MenuToggleKey = keyName
+    end
+    return keyName
+end
+
 local function getToggleKeyCode()
+    local keyName = getMenuToggleKeyName()
     local ok, code = pcall(function()
-        return Enum.KeyCode[Config.MenuToggleKey]
+        return Enum.KeyCode[keyName]
     end)
     return ok and code or nil
 end
 
-local function formatKeyName(keyName)
-    if keyName == "None" then return "None" end
+function formatKeyName(keyName)
+    keyName = keyName or getMenuToggleKeyName()
     local ok, code = pcall(function()
         return Enum.KeyCode[keyName]
     end)
     if ok and code then
         return code.Name
     end
-    return keyName
+    return tostring(keyName)
 end
-
-local lastToggleTime = 0
-local windowFocused = true
-
-UserInputService.WindowFocused:Connect(function()
-    windowFocused = true
-end)
-
-UserInputService.WindowFocusReleased:Connect(function()
-    windowFocused = false
-    lastToggleTime = tick()
-end)
 
 UserInputService.InputBegan:Connect(function(input, processed)
     if processed then return end
-    if not windowFocused then return end
     if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
     if UserInputService:GetFocusedTextBox() then return end
     local expected = getToggleKeyCode()
     if expected and input.KeyCode == expected then
-        local now = tick()
-        if now - lastToggleTime < 0.5 then return end
-        lastToggleTime = now
         Window:Toggle()
     end
 end)
@@ -682,7 +702,7 @@ task.defer(function()
     task.wait(1)
     WindUI:Notify({
         Title = "Car Exploit Loaded",
-        Content = "Press " .. formatKeyName(Config.MenuToggleKey) .. " to toggle menu",
+        Content = "Press " .. formatKeyName() .. " to toggle menu",
         Duration = 5,
         Icon = "info",
     })
@@ -1030,7 +1050,18 @@ local MenuSection = KeybindTab:Section({
 UIElements.MenuToggleKey = MenuSection:Keybind({
     Title = "Toggle Menu Key",
     Value = Config.MenuToggleKey,
+    Blacklist = {
+        Enum.KeyCode.Escape,
+        Enum.KeyCode.Delete,
+        Enum.KeyCode.Backspace,
+        Enum.KeyCode.Unknown,
+    },
     Callback = function(val)
+        if blockedMenuKeys[val] then
+            Config.MenuToggleKey = "RightAlt"
+            UIElements.MenuToggleKey:Set(Config.MenuToggleKey)
+            return
+        end
         Config.MenuToggleKey = val
     end,
 })
