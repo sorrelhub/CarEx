@@ -652,11 +652,16 @@ local function formatKeyName(keyName)
     return keyName
 end
 
+local lastToggleTime = 0
 UserInputService.InputBegan:Connect(function(input, processed)
     if processed then return end
     if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
+    if UserInputService:GetFocusedTextBox() then return end
     local expected = getToggleKeyCode()
     if expected and input.KeyCode == expected then
+        local now = tick()
+        if now - lastToggleTime < 0.3 then return end
+        lastToggleTime = now
         Window:Toggle()
     end
 end)
