@@ -1,10 +1,8 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local Workspace = game:GetService("Workspace")
 local UserInputService = game:GetService("UserInputService")
 local HttpService = game:GetService("HttpService")
 local LocalPlayer = Players.LocalPlayer
-local Camera = Workspace.CurrentCamera
 
 local SCRIPT_VERSION = "1.0.0"
 local DISCORD_URL = "https://sorrelhub.xyz/discord"
@@ -359,18 +357,21 @@ RunService.Heartbeat:Connect(function(deltaTime)
 
                 -- Gravity Control (Apply counter-force dynamically based on workspace gravity)
                 if Config.CustomGravityEnabled then
-                    local mass = 0
-                    for _, p in ipairs(model:GetDescendants()) do
-                        if p:IsA("BasePart") then
-                            mass = mass + p:GetMass()
+                    local model = seat:FindFirstAncestorOfClass("Model")
+                    if model then
+                        local mass = 0
+                        for _, p in ipairs(model:GetDescendants()) do
+                            if p:IsA("BasePart") then
+                                mass = mass + p:GetMass()
+                            end
+                        end
+                        if mass > 0 then
+                            local workspaceGravity = workspace.Gravity
+                            local targetGravity = workspaceGravity * Config.GravityFactor
+                            local counterForce = mass * (workspaceGravity - targetGravity)
+                            base.AssemblyLinearVelocity = base.AssemblyLinearVelocity + Vector3.new(0, (counterForce / mass) * deltaTime, 0)
                         end
                     end
-                    local workspaceGravity = workspace.Gravity
-                    local targetGravity = workspaceGravity * Config.GravityFactor
-                    local counterForce = mass * (workspaceGravity - targetGravity)
-                    
-                    -- Apply force to cancel out native gravity and apply target gravity
-                    base.AssemblyLinearVelocity = base.AssemblyLinearVelocity + Vector3.new(0, (counterForce / mass) * deltaTime, 0)
                 end
 
                 -- Bounce Mode (Check ground contact & bounce back based on fall velocity)
@@ -878,8 +879,8 @@ UIElements.GravityFactor = GravitySection:Slider({
     Title = "Gravity Multiplier",
     Desc = "0 = No Gravity, 1 = Normal, -1 = Reversed",
     Value = {
-        Min = -2.0,
-        Max = 2.0,
+        Min = -1.0,
+        Max = 1.0,
         Default = 1.0,
     },
     Step = 0.1,
@@ -1060,26 +1061,24 @@ local brakeKeys = {
     [Enum.KeyCode.Down] = true
 }
 
+local function matchesBind(bindObj, input, pressedKey)
+    if not bindObj or not bindObj.Value or bindObj.Value == "None" then return false end
+    local bindVal = bindObj.Value
+    if bindVal == "MouseLeftButton" then
+        return input.UserInputType == Enum.UserInputType.MouseButton1
+    elseif bindVal == "MouseRightButton" then
+        return input.UserInputType == Enum.UserInputType.MouseButton2
+    else
+        return pressedKey.Name == bindVal
+    end
+end
+
 UserInputService.InputBegan:Connect(function(input, processed)
     if processed then return end
     
     local pressedKey = input.KeyCode
     if pressedKey == Enum.KeyCode.Unknown then return end
-    
-    -- Helper function to check if input matches a keybind
-    local function matchesBind(bindObj)
-        if not bindObj or not bindObj.Value or bindObj.Value == "None" then return false end
-        local bindVal = bindObj.Value
-        if bindVal == "MouseLeftButton" then
-            return input.UserInputType == Enum.UserInputType.MouseButton1
-        elseif bindVal == "MouseRightButton" then
-            return input.UserInputType == Enum.UserInputType.MouseButton2
-        else
-            return pressedKey.Name == bindVal
-        end
-    end
 
-    -- Manual Brake Dash pedal trigger
     if Config.BrakeDashEnabled and brakeKeys[pressedKey] then
         local char = LocalPlayer.Character
         local hum = char and char:FindFirstChildOfClass("Humanoid")
@@ -1091,22 +1090,22 @@ UserInputService.InputBegan:Connect(function(input, processed)
     end
     
     -- Check discrete keybind triggers
-    if matchesBind(Keybinds.ToggleSpeed) then
+    if matchesBind(Keybinds.ToggleSpeed, input, pressedKey) then
         Config.SpeedBoostEnabled = not Config.SpeedBoostEnabled
         if UIElements.SpeedBoostEnabled then
             UIElements.SpeedBoostEnabled:Set(Config.SpeedBoostEnabled)
         end
-    elseif matchesBind(Keybinds.ToggleFly) then
+    elseif matchesBind(Keybinds.ToggleFly, input, pressedKey) then
         Config.FlyEnabled = not Config.FlyEnabled
         if UIElements.FlyEnabled then
             UIElements.FlyEnabled:Set(Config.FlyEnabled)
         end
-    elseif matchesBind(Keybinds.ToggleAir) then
+    elseif matchesBind(Keybinds.ToggleAir, input, pressedKey) then
         Config.RotationEnabled = not Config.RotationEnabled
         if UIElements.RotationEnabled then
             UIElements.RotationEnabled:Set(Config.RotationEnabled)
         end
-    elseif matchesBind(Keybinds.Jump) then
+    elseif matchesBind(Keybinds.Jump, input, pressedKey) then
         if Config.JumpEnabled then
             local char = LocalPlayer.Character
             local hum = char and char:FindFirstChildOfClass("Humanoid")
@@ -1118,51 +1117,51 @@ UserInputService.InputBegan:Connect(function(input, processed)
                 end
             end
         end
-    elseif matchesBind(Keybinds.ToggleVelocity) then
+    elseif matchesBind(Keybinds.ToggleVelocity, input, pressedKey) then
         Config.VelocityMultiplierEnabled = not Config.VelocityMultiplierEnabled
         if UIElements.VelocityMultiplierEnabled then
             UIElements.VelocityMultiplierEnabled:Set(Config.VelocityMultiplierEnabled)
         end
-    elseif matchesBind(Keybinds.ToggleFlyNoclip) then
+    elseif matchesBind(Keybinds.ToggleFlyNoclip, input, pressedKey) then
         Config.FlyNoclip = not Config.FlyNoclip
         if UIElements.FlyNoclip then
             UIElements.FlyNoclip:Set(Config.FlyNoclip)
         end
-    elseif matchesBind(Keybinds.ToggleBounce) then
+    elseif matchesBind(Keybinds.ToggleBounce, input, pressedKey) then
         Config.BounceEnabled = not Config.BounceEnabled
         if UIElements.BounceEnabled then
             UIElements.BounceEnabled:Set(Config.BounceEnabled)
         end
-    elseif matchesBind(Keybinds.ToggleGravity) then
+    elseif matchesBind(Keybinds.ToggleGravity, input, pressedKey) then
         Config.CustomGravityEnabled = not Config.CustomGravityEnabled
         if UIElements.CustomGravityEnabled then
             UIElements.CustomGravityEnabled:Set(Config.CustomGravityEnabled)
         end
-    elseif matchesBind(Keybinds.ToggleBrakeDash) then
+    elseif matchesBind(Keybinds.ToggleBrakeDash, input, pressedKey) then
         Config.BrakeDashEnabled = not Config.BrakeDashEnabled
         if UIElements.BrakeDashEnabled then
             UIElements.BrakeDashEnabled:Set(Config.BrakeDashEnabled)
         end
-    elseif matchesBind(Keybinds.ToggleSpeedLimiter) then
+    elseif matchesBind(Keybinds.ToggleSpeedLimiter, input, pressedKey) then
         Config.SpeedLimiterEnabled = not Config.SpeedLimiterEnabled
         if UIElements.SpeedLimiterEnabled then
             UIElements.SpeedLimiterEnabled:Set(Config.SpeedLimiterEnabled)
         end
-    elseif matchesBind(Keybinds.BrakeDashLeft) then
+    elseif matchesBind(Keybinds.BrakeDashLeft, input, pressedKey) then
         local char = LocalPlayer.Character
         local hum = char and char:FindFirstChildOfClass("Humanoid")
         local seat = hum and hum.SeatPart
         if seat then
             triggerDash(-seat.CFrame.RightVector)
         end
-    elseif matchesBind(Keybinds.BrakeDashRight) then
+    elseif matchesBind(Keybinds.BrakeDashRight, input, pressedKey) then
         local char = LocalPlayer.Character
         local hum = char and char:FindFirstChildOfClass("Humanoid")
         local seat = hum and hum.SeatPart
         if seat then
             triggerDash(seat.CFrame.RightVector)
         end
-    elseif matchesBind(Keybinds.BrakeDashBack) then
+    elseif matchesBind(Keybinds.BrakeDashBack, input, pressedKey) then
         local char = LocalPlayer.Character
         local hum = char and char:FindFirstChildOfClass("Humanoid")
         local seat = hum and hum.SeatPart
