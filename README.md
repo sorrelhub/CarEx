@@ -1,6 +1,6 @@
-# Car Exploit
+# Car Ex
 
-Roblox vehicle exploit script by [Sorrel Hub](https://sorrelhub.xyz). Built with [WindUI](https://github.com/Footagesus/WindUI).
+Roblox vehicle ex script by [Sorrel Hub](https://sorrelhub.xyz). Built with [WindUI](https://github.com/Footagesus/WindUI).
 
 ## License
 
