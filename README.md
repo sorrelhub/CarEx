@@ -21,7 +21,7 @@ For licensing inquiries, commercial use, or permissions beyond this agreement, c
 ## Usage
 
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/sorrelhub/car-exploit/refs/heads/main/main.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/sorrelhub/CarEx/refs/heads/main/main.lua"))()
 ```
 ## Features
 
