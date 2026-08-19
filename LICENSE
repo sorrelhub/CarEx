@@ -1,54 +1,124 @@
-PROPRIETARY SOFTWARE LICENSE AGREEMENT (EULA)
+SORREL HUB SOURCE LICENSE
+Version 1.0, August 2026
 
-Copyright (c) 2026 Sorrel Hub (Alfredo Swagger / Winner). All rights reserved.
+Copyright (c) 2026 Sorrel Hub.
 
-This Software ("Car Exploit") is proprietary and is protected by copyright laws and international treaty provisions. The software is licensed, not sold.
+This license applies to CarEx and to any source code, documentation, or other
+material distributed with CarEx (the "Software"), except for third-party
+components that are covered by their own licenses.
 
-By downloading, copying, installing, executing, or otherwise using this Software, you ("Licensee") agree to be bound by the terms of this Agreement. If you do not agree to the terms of this Agreement, do not use the Software.
+1. PERMISSION
 
-1. LICENSE GRANT AND PERMITTED USE
-Subject to the terms of this Agreement, the Author grants you a personal, non-exclusive, non-transferable, non-sublicensable, revocable license to execute and run the Software in its compiled/original form solely for your own personal, non-commercial entertainment purposes.
+Subject to the conditions below, Sorrel Hub grants you a worldwide,
+non-exclusive, royalty-free license, irrevocable except upon termination under
+Section 8, to:
 
-2. PERMITTED DISTRIBUTION
-You are permitted to share and redistribute the Software's loadstring execution snippet (i.e. the one-line loader that fetches the script from the original GitHub source) in Telegram channels, Discord servers, forums, social media, YouTube videos, and similar platforms, provided that ALL of the following conditions are met:
-- The shared snippet must load the Software exclusively from the original raw GitHub source URL. You may not host, mirror, or proxy the script on your own servers or alternative URLs.
-- You must clearly credit the original author (Alfredo Swagger / Winner) and Sorrel Hub in every post, message, or publication where the snippet is shared.
-- You must not imply that the Software is your own creation, or that you are affiliated with the Author or Sorrel Hub, unless you have explicit written permission.
-- You must not bundle, wrap, or embed the loadstring snippet inside paid products, subscription-gated loaders, or any system that charges users for access.
+- use and run the Software for personal or other non-commercial purposes;
+- copy, modify, adapt, merge, and create derivative works from the Software;
+- reuse individual functions or substantial code sections in another project;
+- fork, rename, rebrand, publish, and redistribute the Software or derivative
+  works in source or executable form; and
+- keep the source code of your modifications or derivative work private.
 
-3. RESTRICTIONS AND PROHIBITIONS
-You explicitly agree NOT to:
-- Copy, duplicate, reproduce, or store the Software's source code or any substantial part thereof on any public or private server, website, or hosting platform (including but not limited to GitHub forks, ScriptBlox, or other exploit databases). This does not restrict sharing the loadstring snippet as described in Section 2.
-- Modify, alter, patch, merge, translate, adapt, or create derivative works based upon the Software or any part of it.
-- Redistribute, publish, host, or sell the Software's full source code or any derivative works, for commercial or non-commercial purposes.
-- Decompile, disassemble, decrypt, extract, or reverse engineer the Software, or attempt to derive the source code from its execution.
-- Use the Software, its branding, or its assets in any commercial products, paid scripts, or subscription-based loader systems.
-- Remove, alter, or obscure any copyright notices, author attributions, or license references contained in the Software.
+You may apply separate terms to code that you wrote independently, provided
+that your use of CarEx-derived code continues to comply with this license.
 
-4. COPYRIGHT AND OWNERSHIP
-All title, ownership rights, intellectual property rights, and copyrights in and to the Software (including but not limited to any code, algorithms, visual interfaces, assets, and documentation) are owned exclusively by Alfredo Swagger / Winner. This Agreement does not grant you any ownership rights to the Software.
+2. ATTRIBUTION
 
-5. THIRD-PARTY COMPONENTS
-This Software uses the following third-party library, which is subject to its own license:
+Every public distribution of the Software, a derivative work, or a substantial
+portion of the Software must clearly acknowledge Sorrel Hub as the original
+developer.
 
-  WindUI - Copyright (c) 2026 Footages
-  Licensed under the MIT License.
-  https://github.com/Footagesus/WindUI
+For a complete copy, fork, or derivative project, you must:
 
-The MIT License for WindUI requires the following notice be preserved:
-Permission is hereby granted, free of charge, to any person obtaining a copy of WindUI and associated documentation files, to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, subject to the condition that the above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+- include a readable copy of this license and the NOTICE file;
+- retain existing copyright and license notices in any CarEx source files that
+  you distribute;
+- state "Based on CarEx, originally developed by Sorrel Hub" in the project's
+  README, public listing, release description, or equivalent documentation;
+  and
+- include a visible Sorrel Hub attribution in the Credits or About section if
+  the distributed project has a user interface.
 
-The third-party component is provided "AS IS", without warranty of any kind. The inclusion of WindUI does not affect the proprietary status of Car Exploit itself.
+When copying or adapting an individual function or substantial code section,
+place the following notice next to that code whenever source code is provided
+or made available:
 
-6. NO WARRANTY & LIMITATION OF LIABILITY
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES, BAN, ACCOUNT TERMINATION, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  Based on CarEx by Sorrel Hub: https://github.com/sorrelhub/CarEx
 
-7. TERMINATION
-This license is effective until terminated. Your rights under this Agreement will terminate automatically without notice if you fail to comply with any term(s) of this Agreement. Upon termination, you must cease all use of the Software.
+If the CarEx-derived source remains private, include the same attribution in
+the public description, documentation, Credits, or About section of the project
+that contains it.
 
-8. CONTACT AND PERMISSIONS
-Any deviation from these terms, including commercial usage, integration into other exploit hubs/scripts, or code modifications, requires explicit written permission from the Author.
+You may rename or rebrand a derivative work. Attribution does not mean that
+Sorrel Hub endorses, maintains, or is affiliated with that derivative work.
 
-For inquiries, contact the Author:
-- Website: https://sorrelhub.xyz/support
-- Discord: https://sorrelhub.xyz/discord
+3. SOURCE DISCLOSURE
+
+You are not required to publish or disclose the source code of your
+modifications or derivative works. If you choose to distribute source code,
+the attribution requirements in Section 2 apply to the CarEx-derived portions.
+
+4. FREE ACCESS AND MONETIZATION
+
+The Software and derivative works may be distributed through a free key system
+or advertising checkpoint, provided that every user can obtain access without
+making a payment.
+
+Optional donations and sponsorships are permitted when they do not unlock,
+prioritize, or restrict access to the Software or its features.
+
+You may not:
+
+- sell the Software or a derivative work;
+- sell licenses, access keys, subscriptions, features, or access to the
+  Software or a derivative work;
+- place the Software or CarEx-derived functionality behind a paid product,
+  paid loader, membership, subscription, or other payment requirement; or
+- offer the Software or a derivative work as a paid service.
+
+Commercial permission outside these terms requires prior written permission
+from Sorrel Hub.
+
+5. TRADEMARKS AND REPRESENTATION
+
+This license does not grant permission to use Sorrel Hub names, logos, or other
+branding except as required for attribution. You may not claim that a fork or
+derivative work is official, endorsed by, maintained by, or affiliated with
+Sorrel Hub without prior written permission.
+
+6. THIRD-PARTY COMPONENTS
+
+Third-party components are not relicensed by this license. CarEx currently
+loads WindUI, which is distributed under the MIT License by its respective
+copyright holder:
+
+  WindUI: https://github.com/Footagesus/WindUI
+
+You are responsible for following the licenses of all third-party components
+that you use or redistribute.
+
+7. NO WARRANTY
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. IN NO EVENT SHALL
+SORREL HUB BE LIABLE FOR ANY CLAIM, DAMAGES, BAN, ACCOUNT TERMINATION, OR OTHER
+LIABILITY ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+OR OTHER DEALINGS IN THE SOFTWARE.
+
+8. TERMINATION
+
+Your rights under this license terminate automatically if you violate its
+terms. Upon termination, you must stop distributing the Software and any
+CarEx-derived material until the violation is corrected. Sections concerning
+attribution, trademarks, warranty, and liability survive termination.
+
+9. ADDITIONAL PERMISSION
+
+Any use not permitted by this license requires prior written permission from
+Sorrel Hub.
+
+Contact:
+https://sorrelhub.xyz/support
+https://sorrelhub.xyz/discord

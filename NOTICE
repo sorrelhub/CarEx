@@ -1,0 +1,13 @@
+CarEx
+Copyright (c) 2026 Sorrel Hub
+
+CarEx was originally developed by Sorrel Hub.
+Original project: https://github.com/sorrelhub/CarEx
+
+CarEx is distributed under the Sorrel Hub Source License 1.0.
+This notice must remain readable in redistributed copies and derivative works
+as described in the LICENSE file.
+
+CarEx loads WindUI as a third-party component:
+https://github.com/Footagesus/WindUI
+WindUI remains subject to its own license and copyright notices.

@@ -2,27 +2,41 @@
 
 Roblox vehicle ex script by [Sorrel Hub](https://sorrelhub.xyz). Built with [WindUI](https://github.com/Footagesus/WindUI).
 
-## License
+## Use and reuse
 
-This repository is **source-available**, not open source. The code is public so anyone can review it and verify there's nothing malicious inside — no anti-cheat evasion tricks, no hidden logging, no obfuscated backdoors.
+CarEx is distributed under the [Sorrel Hub Source License 1.0](./LICENSE). You may:
 
-However, being publicly visible does **not** make it open source. This project is licensed under a **Proprietary License** (see [LICENSE](./LICENSE)), which means:
+- use, copy, modify, fork, and rebrand CarEx;
+- reuse individual functions or larger code sections;
+- include CarEx code in another free project;
+- keep your modified source code private; and
+- use a free advertising checkpoint or key system.
 
-- ✅ You may **read and review** the source code
-- ✅ You may **use** the compiled/original script for personal, non-commercial use
-- ❌ You may **not** copy, fork, redistribute, or host the source code elsewhere
-- ❌ You may **not** modify or create derivative works
-- ❌ You may **not** use it in commercial products or paid loaders
+You must credit Sorrel Hub as the original developer. Direct sales, paid access, subscriptions, paid keys, and paid loaders are not permitted without written permission from Sorrel Hub.
 
-Visibility ≠ permission. "Open code" and "open source license" are two different things — see [source-available software](https://en.wikipedia.org/wiki/Source-available_software) for more context.
+This is a source-available license with a non-commercial restriction, not an OSI-approved open-source license. Read [LICENSE](./LICENSE) and [NOTICE](./NOTICE) for the complete terms.
 
-For licensing inquiries, commercial use, or permissions beyond this agreement, contact us via [Discord](https://sorrelhub.xyz/discord) or [support](https://sorrelhub.xyz/support).
+### Attribution examples
+
+For a fork or complete derivative project, place this in the README or public description and keep a visible Sorrel Hub entry in Credits when the project has a user interface:
+
+```text
+Based on CarEx, originally developed by Sorrel Hub.
+https://github.com/sorrelhub/CarEx
+```
+
+When copying or adapting an individual function or substantial code section, add this comment next to it. If that source remains private, place the same attribution in the public description or Credits:
+
+```lua
+-- Based on CarEx by Sorrel Hub: https://github.com/sorrelhub/CarEx
+```
 
 ## Usage
 
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/sorrelhub/CarEx/refs/heads/main/main.lua"))()
 ```
+
 ## Features
 
 ### Speed
@@ -57,6 +71,3 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/sorrelhub/CarEx/refs/
 - [Discord](https://sorrelhub.xyz/discord)
 - [Telegram](https://t.me/wwdevlog)
 - [Support](https://sorrelhub.xyz/support)
-
-## License
-Proprietary. See [LICENSE](LICENSE) for details.

@@ -1,3 +1,12 @@
+--[[
+    CarEx
+    Copyright (c) 2026 Sorrel Hub
+    Licensed under the Sorrel Hub Source License 1.0.
+    Free copying, modification, and redistribution are permitted with Sorrel Hub attribution.
+    Direct sale and paid access are not permitted.
+    https://github.com/sorrelhub/CarEx
+]]
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -1222,7 +1231,7 @@ local CreditsSection = CreditsTab:Section({
 
 CreditsSection:Paragraph({
     Title = "Car Exploit v" .. SCRIPT_VERSION,
-    Desc = "Developed by Sorrel Hub",
+    Desc = "Originally developed by Sorrel Hub | Sorrel Hub Source License 1.0",
     Color = "Blue",
     Buttons = {
         {
