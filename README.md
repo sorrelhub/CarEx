@@ -25,7 +25,7 @@ Based on CarEx, originally developed by Sorrel Hub.
 https://github.com/sorrelhub/CarEx
 ```
 
-When copying or adapting an individual function or substantial code section, add this comment next to it. If that source remains private, place the same attribution in the public description or Credits:
+When copying or adapting an individual function or substantial code section, add this comment next to it. If that source remains private, place the same attribution in the public description or Credit[...]
 
 ```lua
 -- Based on CarEx by Sorrel Hub: https://github.com/sorrelhub/CarEx
@@ -71,3 +71,5 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/sorrelhub/CarEx/refs/
 - [Discord](https://sorrelhub.xyz/discord)
 - [Telegram](https://t.me/wwdevlog)
 - [Support](https://sorrelhub.xyz/support)
+
+[![Reviewed on ScriptBlox](https://scriptblox.com/badge/update-Car-Crash-Simulator-V3-CarEx-keyless-246091)](https://scriptblox.com/script/update-Car-Crash-Simulator-V3-CarEx-keyless-246091)
